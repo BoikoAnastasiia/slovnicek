@@ -19,7 +19,8 @@ const themeInit = `try{const t=localStorage.getItem('theme');if(t)document.docum
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sk" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
-      <body>
+      {/* suppress: extensions like Grammarly inject body attributes before hydration */}
+      <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <SyncBootstrap />
         <main className="app-main">{children}</main>
