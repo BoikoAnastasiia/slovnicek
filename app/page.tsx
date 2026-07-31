@@ -50,7 +50,7 @@ export default function TodayPage() {
   }
 
   return (
-    <div>
+    <div className="today-page">
       <h1 className="serif" style={{ fontSize: 34, margin: '8px 0 4px' }}>Slovníček</h1>
       <p style={{ color: 'var(--muted)', margin: introducedCount > 0 ? '0 0 4px' : '0 0 28px' }}>
         {wordCount} {plural(wordCount, ['slovo', 'slová', 'slov'])} · {profile?.total_points ?? 0} {plural(profile?.total_points ?? 0, ['bod', 'body', 'bodov'])} · séria {profile?.current_streak ?? 0} {plural(profile?.current_streak ?? 0, ['deň', 'dni', 'dní'])}

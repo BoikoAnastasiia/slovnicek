@@ -196,7 +196,7 @@ export default function RoundPage() {
   }
 
   return (
-    <div>
+    <div className="round-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--muted)', fontSize: 14, marginBottom: 24 }}>
         <span>{index + 1} / {questions.length}</span>
         {combo > 1 && <span>🔥 x{combo}</span>}
