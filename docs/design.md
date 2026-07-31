@@ -164,3 +164,26 @@ Unit tests target the four places where silent bugs hurt:
 - Bulk import; stats dashboard/heatmap (deferred by user choice).
 - LLM-based enrichment (module boundary allows swapping in later).
 - Multi-user features, leaderboards.
+
+## Addendum (2026-07-31): Bundled word bank + daily feed
+
+User clarification: the app must SUPPLY vocabulary — "I don't want to think
+about what words I need." No suitable runtime Slovak↔Russian API exists, so
+the app ships a pregenerated word bank and feeds it into the SRS daily.
+
+- **Word bank:** top ~2,000 Slovak lemmas by real-world frequency
+  (OpenSubtitles corpus via hermitdave/FrequencyWords), enriched from
+  kaikki.org Wiktionary extractions: RU translations primarily from the
+  ruwiktionary Slovak dataset (7.4k words), POS/gender/examples from the
+  enwiktionary Slovak dataset (17k words); remaining RU gaps filled and the
+  whole bank quality-reviewed at build time. Shipped as
+  `public/wordbank.json`, precached by the service worker (offline-first
+  preserved; no runtime API, no keys).
+- **Daily feed:** once per day, the app auto-introduces N new bank words
+  (default 5, configurable 0/3/5/10 in Profile; 0 disables) into the word
+  base with tags `feed` + frequency band (`top500`/`top1000`/`top2000`),
+  in frequency order, skipping any word already in the base (including
+  deleted ones — a deleted feed word never returns). Introduction happens on
+  Today screen load, idempotent per day.
+- Manual Add and Wiktionary enrichment remain unchanged — the feed makes
+  them optional, not obsolete.
