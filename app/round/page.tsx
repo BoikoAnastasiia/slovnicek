@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'next-view-transitions'
 import { AnimatePresence, motion } from 'framer-motion'
-import { db, getProfile } from '@/lib/db'
+import { db, getProfile, uuid } from '@/lib/db'
 import { introduceMoreWords, loadBank } from '@/lib/feed'
 import { applyAnswer, dueWords, promptLangOf } from '@/lib/fsrs'
 import { buildRound, checkAnswer } from '@/lib/questions'
@@ -88,7 +88,7 @@ export default function RoundPage() {
       const earned = correct ? pointsFor(q.type, combo) : 0
       const iso = now.toISOString()
       await db.review_logs.put({
-        id: crypto.randomUUID(), word_id: q.wordId, question_type: q.type, correct,
+        id: uuid(), word_id: q.wordId, question_type: q.type, correct,
         fsrs_grade: correct ? 3 : 1, points_earned: earned, answered_at: iso,
         created_at: iso, updated_at: iso, deleted_at: null, dirty: 1,
       })

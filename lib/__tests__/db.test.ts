@@ -1,7 +1,7 @@
 import 'fake-indexeddb/auto'
 import { liveQuery } from 'dexie'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db, getProfile, newWord, saveWord, softDeleteWord, PROFILE_ID } from '@/lib/db'
+import { db, getProfile, newWord, saveWord, softDeleteWord, uuid, PROFILE_ID } from '@/lib/db'
 
 beforeEach(async () => {
   await Promise.all([db.words.clear(), db.review_logs.clear(), db.profile.clear(), db.meta.clear()])
@@ -80,5 +80,17 @@ describe('liveQuery read-only constraint (regression)', () => {
     expect(emitted).toEqual([])
     expect(errors.length).toBe(1)
     expect(String((errors[0] as Error).message ?? errors[0])).toMatch(/Readwrite transaction in liveQuery context/i)
+  })
+})
+
+describe('uuid', () => {
+  it('produces v4-format ids with and without crypto.randomUUID (insecure contexts)', () => {
+    const re = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/
+    expect(uuid()).toMatch(re)
+    const orig = crypto.randomUUID
+    // simulate an insecure context where randomUUID is missing
+    ;(crypto as { randomUUID?: unknown }).randomUUID = undefined
+    expect(uuid()).toMatch(re)
+    ;(crypto as { randomUUID?: unknown }).randomUUID = orig
   })
 })

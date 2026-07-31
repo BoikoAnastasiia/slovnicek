@@ -25,12 +25,22 @@ export const PROFILE_ID = 'profile'
 
 export const nowIso = () => new Date().toISOString()
 
+// crypto.randomUUID is unavailable in insecure contexts (e.g. LAN http) — fall back to v4 via getRandomValues
+export function uuid(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID()
+  const b = crypto.getRandomValues(new Uint8Array(16))
+  b[6] = (b[6] & 0x0f) | 0x40
+  b[8] = (b[8] & 0x3f) | 0x80
+  const h = Array.from(b, (x) => x.toString(16).padStart(2, '0')).join('')
+  return `${h.slice(0, 8)}-${h.slice(8, 12)}-${h.slice(12, 16)}-${h.slice(16, 20)}-${h.slice(20)}`
+}
+
 export function newWord(fields: Partial<WordRow> & { slovak: string }): WordRow {
   const now = new Date()
   const iso = now.toISOString()
   const card = newCard(now)
   return {
-    id: crypto.randomUUID(),
+    id: uuid(),
     translation_ru: '', definition_sk: '', part_of_speech: '', gender: '',
     examples: [], tags: [], notes: '',
     fsrs: card, due: card.due, prompt_mode: 'auto',
