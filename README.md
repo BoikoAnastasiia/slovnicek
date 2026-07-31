@@ -3,7 +3,14 @@
 Personal Slovak vocabulary trainer for Russian speakers. Offline-first PWA:
 collect words, review them in auto-graded quiz rounds scheduled by FSRS, and
 watch prompts switch from Russian translations to Slovak-only definitions as
-words mature.
+words mature. A bundled bank of the 2,000 most frequent Slovak words feeds
+you new vocabulary daily — no lesson plans, no curation.
+
+<p align="center">
+  <img src="docs/screens/today.png" width="260" alt="Today — due words and daily feed" />
+  <img src="docs/screens/round.png" width="260" alt="Quiz round — auto-graded questions" />
+  <img src="docs/screens/base.png" width="260" alt="Word base — search and tags" />
+</p>
 
 ## Stack
 
