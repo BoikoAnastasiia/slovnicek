@@ -16,12 +16,12 @@ export default function ProfilePage() {
   const profile = useLiveQuery(() => db.profile.get(PROFILE_ID), [])
   const [email, setEmail] = useState<string | null>(null)
   const [syncState, setSyncState] = useState<SyncState>('idle')
-  const [theme, setTheme] = useState<string>('system')
+  const [theme, setTheme] = useState<string>('light')
   const [feedCount, setFeedCountState] = useState<number>(FEED_DEFAULT_COUNT)
 
   useEffect(() => {
     getUserEmail().then(setEmail)
-    setTheme(localStorage.getItem('theme') ?? 'system')
+    setTheme(localStorage.getItem('theme') ?? 'light')
     getFeedCount().then(setFeedCountState)
   }, [])
 
@@ -32,13 +32,8 @@ export default function ProfilePage() {
 
   function applyTheme(t: string) {
     setTheme(t)
-    if (t === 'system') {
-      localStorage.removeItem('theme')
-      delete document.documentElement.dataset.theme
-    } else {
-      localStorage.setItem('theme', t)
-      document.documentElement.dataset.theme = t
-    }
+    localStorage.setItem('theme', t)
+    document.documentElement.dataset.theme = t
   }
 
   async function doSync() {
@@ -86,10 +81,10 @@ export default function ProfilePage() {
 
       <h2 style={{ fontSize: 16 }}>Vzhľad</h2>
       <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
-        {(['light', 'system', 'dark'] as const).map((t) => (
+        {(['light', 'dark'] as const).map((t) => (
           <button key={t} className="btn" style={theme === t ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
             onClick={() => applyTheme(t)}>
-            {t === 'light' ? 'Svetlý' : t === 'dark' ? 'Tmavý' : 'Systém'}
+            {t === 'light' ? 'Svetlý' : 'Tmavý'}
           </button>
         ))}
       </div>

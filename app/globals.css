@@ -25,20 +25,6 @@
   --danger: #e0716f;
   --border: #2b2f36;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']):not([data-theme='dark']) {
-    --bg: #15171b;
-    --surface: #1f2228;
-    --text: #f2f3f5;
-    --muted: #9aa1ab;
-    --accent: #4d94f0;
-    --accent-edge: #2b6cc4;
-    --accent-soft: #1c2b40;
-    --gold: #f7c325;
-    --danger: #e0716f;
-    --border: #2b2f36;
-  }
-}
 
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
@@ -66,12 +52,6 @@ body {
 [data-theme='dark'] .card {
   box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
   border: 1px solid var(--border);
-}
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme='light']):not([data-theme='dark']) .card {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .4);
-    border: 1px solid var(--border);
-  }
 }
 .btn {
   font: inherit;
