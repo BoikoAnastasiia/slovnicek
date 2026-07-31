@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { db, getProfile, nowIso } from '@/lib/db'
+import { db, nowIso, PROFILE_ID } from '@/lib/db'
 import { ACHIEVEMENTS } from '@/lib/scoring'
 import { getSupabase, getUserEmail, runSync, signInWithGoogle, signOut } from '@/lib/supabase'
 import type { ProfileRow, ReviewLogRow, WordRow } from '@/lib/types'
@@ -9,7 +9,7 @@ import type { ProfileRow, ReviewLogRow, WordRow } from '@/lib/types'
 type SyncState = 'idle' | 'syncing' | 'ok' | 'offline' | 'signed_out' | 'error'
 
 export default function ProfilePage() {
-  const profile = useLiveQuery(() => getProfile(), [])
+  const profile = useLiveQuery(() => db.profile.get(PROFILE_ID), [])
   const [email, setEmail] = useState<string | null>(null)
   const [syncState, setSyncState] = useState<SyncState>('idle')
   const [theme, setTheme] = useState<string>('system')

@@ -1,4 +1,5 @@
 import 'fake-indexeddb/auto'
+import { liveQuery } from 'dexie'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { db, getProfile, newWord, saveWord, softDeleteWord, PROFILE_ID } from '@/lib/db'
 
@@ -44,5 +45,40 @@ describe('getProfile', () => {
     await db.profile.update(PROFILE_ID, { total_points: 50 })
     const p2 = await getProfile()
     expect(p2.total_points).toBe(50)
+  })
+})
+
+describe('liveQuery read-only constraint (regression)', () => {
+  // Pins the bug that crashed the app: getProfile() performs a db.profile.put()
+  // write when the profile row is missing. Dexie forbids writes inside a
+  // liveQuery observer ("Readwrite transaction in liveQuery context"), which
+  // surfaced as an unhandled rejection and crashed app/page.tsx and
+  // app/profile/page.tsx on first load. The fix is to read via
+  // db.profile.get(PROFILE_ID) inside useLiveQuery instead of getProfile().
+  it('liveQuery(() => db.profile.get(PROFILE_ID)) emits undefined without error on an empty db', async () => {
+    const emitted: (unknown | undefined)[] = []
+    const errors: unknown[] = []
+    await new Promise<void>((resolve) => {
+      const sub = liveQuery(() => db.profile.get(PROFILE_ID)).subscribe({
+        next: (v) => { emitted.push(v); sub.unsubscribe(); resolve() },
+        error: (e) => { errors.push(e); sub.unsubscribe(); resolve() },
+      })
+    })
+    expect(errors).toEqual([])
+    expect(emitted).toEqual([undefined])
+  })
+
+  it('liveQuery(() => getProfile()) rejects with a Dexie error on an empty db', async () => {
+    const errors: unknown[] = []
+    const emitted: unknown[] = []
+    await new Promise<void>((resolve) => {
+      const sub = liveQuery(() => getProfile()).subscribe({
+        next: (v) => { emitted.push(v); sub.unsubscribe(); resolve() },
+        error: (e) => { errors.push(e); sub.unsubscribe(); resolve() },
+      })
+    })
+    expect(emitted).toEqual([])
+    expect(errors.length).toBe(1)
+    expect(String((errors[0] as Error).message ?? errors[0])).toMatch(/Readwrite transaction in liveQuery context/i)
   })
 })

@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { motion } from 'framer-motion'
-import { db, getProfile } from '@/lib/db'
+import { db, PROFILE_ID } from '@/lib/db'
 import { dueWords } from '@/lib/fsrs'
 
 export default function TodayPage() {
@@ -11,7 +11,7 @@ export default function TodayPage() {
     return dueWords(all, new Date()).length
   }, [], 0)
   const wordCount = useLiveQuery(() => db.words.filter((w) => !w.deleted_at).count(), [], 0)
-  const profile = useLiveQuery(() => getProfile(), [])
+  const profile = useLiveQuery(() => db.profile.get(PROFILE_ID), [])
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
