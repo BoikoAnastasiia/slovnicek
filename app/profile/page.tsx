@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, nowIso, PROFILE_ID } from '@/lib/db'
+import { FEED_DEFAULT_COUNT, getFeedCount, setFeedCount } from '@/lib/feed'
 import { plural } from '@/lib/plural'
 import { ACHIEVEMENTS } from '@/lib/scoring'
 import { getSupabase, getUserEmail, runSync, signInWithGoogle, signOut } from '@/lib/supabase'
@@ -9,17 +10,26 @@ import type { ProfileRow, ReviewLogRow, WordRow } from '@/lib/types'
 
 type SyncState = 'idle' | 'syncing' | 'ok' | 'offline' | 'signed_out' | 'error'
 
+const FEED_COUNT_OPTIONS = [0, 3, 5, 10] as const
+
 export default function ProfilePage() {
   const profile = useLiveQuery(() => db.profile.get(PROFILE_ID), [])
   const [email, setEmail] = useState<string | null>(null)
   const [syncState, setSyncState] = useState<SyncState>('idle')
   const [theme, setTheme] = useState<string>('system')
+  const [feedCount, setFeedCountState] = useState<number>(FEED_DEFAULT_COUNT)
   const fileRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     getUserEmail().then(setEmail)
     setTheme(localStorage.getItem('theme') ?? 'system')
+    getFeedCount().then(setFeedCountState)
   }, [])
+
+  async function applyFeedCount(n: number) {
+    setFeedCountState(n)
+    await setFeedCount(n)
+  }
 
   function applyTheme(t: string) {
     setTheme(t)
@@ -117,11 +127,21 @@ export default function ProfilePage() {
       </div>
 
       <h2 style={{ fontSize: 16 }}>Vzhľad</h2>
-      <div style={{ display: 'flex', gap: 8 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20 }}>
         {(['light', 'system', 'dark'] as const).map((t) => (
           <button key={t} className="btn" style={theme === t ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
             onClick={() => applyTheme(t)}>
             {t === 'light' ? 'Svetlý' : t === 'dark' ? 'Tmavý' : 'Systém'}
+          </button>
+        ))}
+      </div>
+
+      <h2 style={{ fontSize: 16 }}>Denný prísun</h2>
+      <div style={{ display: 'flex', gap: 8 }}>
+        {FEED_COUNT_OPTIONS.map((n) => (
+          <button key={n} className="btn" style={feedCount === n ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
+            onClick={() => applyFeedCount(n)}>
+            {n === 0 ? 'Vypnutý' : n}
           </button>
         ))}
       </div>
