@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: 'Slovníček',
   description: 'Personal Slovak vocabulary trainer',
   manifest: '/manifest.webmanifest',
+  other: { google: 'notranslate' },
 }
 export const viewport: Viewport = { themeColor: '#2f6f5e' }
 
@@ -18,7 +19,7 @@ const themeInit = `try{const t=localStorage.getItem('theme');if(t)document.docum
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sk" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+    <html lang="sk" translate="no" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
       {/* suppress: extensions like Grammarly inject body attributes before hydration */}
       <body suppressHydrationWarning>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
