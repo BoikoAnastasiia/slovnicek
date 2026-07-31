@@ -3,8 +3,10 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { db, newWord, softDeleteWord } from '@/lib/db'
 import {
   FEED_DEFAULT_COUNT,
+  LEARN_BATCH,
   getFeedCount,
   introduceDailyWords,
+  introduceMoreWords,
   loadBank,
   setFeedCount,
   type BankEntry,
@@ -177,5 +179,52 @@ describe('introduceDailyWords', () => {
     expect(day1.map((r) => r.slovak)).toEqual(['slovo1', 'slovo2'])
     const day2 = await introduceDailyWords(bank, '2026-08-01')
     expect(day2.map((r) => r.slovak)).toEqual(['slovo3', 'slovo4'])
+  })
+})
+
+describe('introduceMoreWords', () => {
+  it('introduces exactly N unseen bank words in rank order, skipping existing and soft-deleted', async () => {
+    const kept = newWord({ slovak: 'slovo1' })
+    await db.words.put(kept)
+    const deletedWord = newWord({ slovak: 'slovo2' })
+    await db.words.put(deletedWord)
+    await softDeleteWord(deletedWord.id)
+
+    const rows = await introduceMoreWords(bankOf(10), 3)
+    expect(rows.map((r) => r.slovak)).toEqual(['slovo3', 'slovo4', 'slovo5'])
+    expect(rows.every((r) => r.tags[0] === 'feed')).toBe(true)
+  })
+
+  it('defaults to LEARN_BATCH when count is omitted', async () => {
+    const rows = await introduceMoreWords(bankOf(20))
+    expect(rows).toHaveLength(LEARN_BATCH)
+  })
+
+  it('does not read or write feed:last_date', async () => {
+    await introduceMoreWords(bankOf(5), 2)
+    const meta = await db.meta.get('feed:last_date')
+    expect(meta).toBeUndefined()
+
+    // Even with feed:last_date already set for today, introduceMoreWords still introduces.
+    await db.meta.put({ key: 'feed:last_date', value: '2026-07-31' })
+    const rows = await introduceMoreWords(bankOf(5), 2)
+    expect(rows).toHaveLength(2)
+  })
+
+  it('works repeatedly: two consecutive calls introduce different words', async () => {
+    const bank = bankOf(10)
+    const first = await introduceMoreWords(bank, 4)
+    const second = await introduceMoreWords(bank, 4)
+    expect(first.map((r) => r.slovak)).toEqual(['slovo1', 'slovo2', 'slovo3', 'slovo4'])
+    expect(second.map((r) => r.slovak)).toEqual(['slovo5', 'slovo6', 'slovo7', 'slovo8'])
+    expect(await db.words.count()).toBe(8)
+  })
+
+  it('returns [] once the bank is exhausted', async () => {
+    const bank = bankOf(3)
+    const first = await introduceMoreWords(bank, 5)
+    expect(first).toHaveLength(3)
+    const second = await introduceMoreWords(bank, 5)
+    expect(second).toEqual([])
   })
 })

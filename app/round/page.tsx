@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { AnimatePresence, motion } from 'framer-motion'
 import { db, getProfile } from '@/lib/db'
+import { introduceMoreWords, loadBank } from '@/lib/feed'
 import { applyAnswer, dueWords, promptLangOf } from '@/lib/fsrs'
 import { buildRound, checkAnswer } from '@/lib/questions'
 import { applyRoundToProfile, evaluateAchievements, pointsFor, type AchievementDef } from '@/lib/scoring'
@@ -22,6 +23,7 @@ export default function RoundPage() {
   const [combo, setCombo] = useState(0)
   const [points, setPoints] = useState(0)
   const [unlocked, setUnlocked] = useState<AchievementDef[]>([])
+  const [moreExhausted, setMoreExhausted] = useState(false)
   const correctRef = useRef(0)
   const pointsRef = useRef(0)
   const resultsRef = useRef<{ wordId: string; correct: boolean }[]>([])
@@ -29,18 +31,46 @@ export default function RoundPage() {
   const q = questions[index]
   const word = q ? wordsById.get(q.wordId) : undefined
 
+  async function loadRound() {
+    const all = await db.words.toArray()
+    const due = dueWords(all, new Date())
+    if (due.length === 0) { setPhase('empty'); return }
+    const round = buildRound(due, all, { ttsAvailable: ttsAvailable(), rng: Math.random })
+    setWordsById(new Map(all.map((w) => [w.id, w])))
+    setQuestions(round)
+    setPhase('answering')
+  }
+
   useEffect(() => {
     onVoicesReady(() => {})
-    ;(async () => {
-      const all = await db.words.toArray()
-      const due = dueWords(all, new Date())
-      if (due.length === 0) { setPhase('empty'); return }
-      const round = buildRound(due, all, { ttsAvailable: ttsAvailable(), rng: Math.random })
-      setWordsById(new Map(all.map((w) => [w.id, w])))
-      setQuestions(round)
-      setPhase('answering')
-    })()
+    loadRound()
   }, [])
+
+  async function learnMoreAndContinue() {
+    if (busyRef.current) return
+    busyRef.current = true
+    try {
+      const bank = await loadBank()
+      const rows = await introduceMoreWords(bank, 10)
+      if (rows.length === 0) {
+        setMoreExhausted(true)
+        return
+      }
+      setIndex(0)
+      setTyped('')
+      setLastCorrect(false)
+      setCombo(0)
+      setPoints(0)
+      setUnlocked([])
+      correctRef.current = 0
+      pointsRef.current = 0
+      resultsRef.current = []
+      setPhase('loading')
+      await loadRound()
+    } finally {
+      busyRef.current = false
+    }
+  }
 
   useEffect(() => {
     if (phase === 'answering' && q?.audioWord) speakSk(q.audioWord)
@@ -155,7 +185,12 @@ export default function RoundPage() {
             </div>
           ))}
         </div>
-        <Link href="/"><button className="btn btn-primary" style={{ marginTop: 20 }}>Hotovo</button></Link>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 20 }}>
+          <Link href="/"><button className="btn btn-primary">Hotovo</button></Link>
+          {!moreExhausted && (
+            <button className="btn" onClick={learnMoreAndContinue}>Ďalších 10 nových slov</button>
+          )}
+        </div>
       </motion.div>
     )
   }

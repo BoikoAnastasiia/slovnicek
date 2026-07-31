@@ -1,10 +1,11 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { motion } from 'framer-motion'
 import { db, PROFILE_ID } from '@/lib/db'
-import { introduceDailyWords, loadBank } from '@/lib/feed'
+import { introduceDailyWords, introduceMoreWords, loadBank } from '@/lib/feed'
 import { dueWords } from '@/lib/fsrs'
 import { plural } from '@/lib/plural'
 
@@ -13,6 +14,7 @@ function todayStr(): string {
 }
 
 export default function TodayPage() {
+  const router = useRouter()
   const dueCount = useLiveQuery(async () => {
     const all = await db.words.toArray()
     return dueWords(all, new Date()).length
@@ -20,6 +22,8 @@ export default function TodayPage() {
   const wordCount = useLiveQuery(() => db.words.filter((w) => !w.deleted_at).count(), [], 0)
   const profile = useLiveQuery(() => db.profile.get(PROFILE_ID), [])
   const [introducedCount, setIntroducedCount] = useState(0)
+  const [bankExhausted, setBankExhausted] = useState(false)
+  const busyRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -28,6 +32,22 @@ export default function TodayPage() {
     })
     return () => { cancelled = true }
   }, [])
+
+  async function learnMore() {
+    if (busyRef.current) return
+    busyRef.current = true
+    try {
+      const bank = await loadBank()
+      const rows = await introduceMoreWords(bank, 10)
+      if (rows.length === 0) {
+        setBankExhausted(true)
+        return
+      }
+      router.push('/round')
+    } finally {
+      busyRef.current = false
+    }
+  }
 
   return (
     <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
@@ -44,12 +64,16 @@ export default function TodayPage() {
       <div className="card" style={{ textAlign: 'center', padding: 36 }}>
         <div className="serif" style={{ fontSize: 64, lineHeight: 1 }}>{dueCount}</div>
         <p style={{ color: 'var(--muted)', margin: '8px 0 24px' }}>
-          {dueCount === 0 ? 'Všetko zopakované. Pridaj nové slová!' : `${plural(dueCount, ['slovo', 'slová', 'slov'])} na zopakovanie`}
+          {dueCount === 0
+            ? (bankExhausted ? 'Všetko zopakované. Pridaj nové slová!' : 'Všetko zopakované. Uč sa nové slová z databázy!')
+            : `${plural(dueCount, ['slovo', 'slová', 'slov'])} na zopakovanie`}
         </p>
         {dueCount > 0 ? (
           <Link href="/round"><button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }}>Začať kolo</button></Link>
-        ) : (
+        ) : bankExhausted ? (
           <Link href="/add"><button className="btn">Pridať slovo</button></Link>
+        ) : (
+          <button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }} onClick={learnMore}>Učiť sa nové slová</button>
         )}
       </div>
     </motion.div>
