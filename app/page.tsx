@@ -62,7 +62,7 @@ export default function TodayPage() {
       )}
 
       <div className="card" style={{ textAlign: 'center', padding: 36 }}>
-        <Image src="/hero.png" alt="" width={200} height={136} style={{ display: 'block', margin: '0 auto 4px' }} />
+        <Image src="/hero.png" alt="" width={200} height={136} priority style={{ display: 'block', margin: '0 auto 4px' }} />
         <div className="serif" style={{ fontSize: 64, lineHeight: 1 }}>{dueCount}</div>
         <p style={{ color: 'var(--muted)', margin: '8px 0 24px' }}>
           {dueCount === 0
