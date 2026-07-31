@@ -65,4 +65,18 @@ describe('evaluateAchievements', () => {
   it('catalog has unique ids', () => {
     expect(new Set(ACHIEVEMENTS.map((a) => a.id)).size).toBe(ACHIEVEMENTS.length)
   })
+  it('catalog has 25 achievements', () => {
+    expect(ACHIEVEMENTS.length).toBe(25)
+  })
+  it('points_100 unlocks at 150 points but points_1000 does not', () => {
+    const ids = evaluateAchievements(ctx({ totalPoints: 150 }), {}).map((a) => a.id)
+    expect(ids).toContain('points_100')
+    expect(ids).not.toContain('points_1000')
+  })
+  it('perfect_10 needs >=10 questions all correct', () => {
+    const tooSmall = evaluateAchievements(ctx({ lastRound: { total: 9, correct: 9, points: 90 } }), {})
+    expect(tooSmall.map((a) => a.id)).not.toContain('perfect_10')
+    const ok = evaluateAchievements(ctx({ lastRound: { total: 10, correct: 10, points: 100 } }), {})
+    expect(ok.map((a) => a.id)).toContain('perfect_10')
+  })
 })
