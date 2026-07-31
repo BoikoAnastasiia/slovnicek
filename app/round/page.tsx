@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import { AnimatePresence, motion } from 'framer-motion'
 import { db, getProfile } from '@/lib/db'
 import { introduceMoreWords, loadBank } from '@/lib/feed'

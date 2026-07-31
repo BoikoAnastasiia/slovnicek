@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link'
+import { Link } from 'next-view-transitions'
 import { useRouter } from 'next/navigation'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { motion } from 'framer-motion'
@@ -50,7 +50,7 @@ export default function TodayPage() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
+    <div>
       <h1 className="serif" style={{ fontSize: 34, margin: '8px 0 4px' }}>Slovníček</h1>
       <p style={{ color: 'var(--muted)', margin: introducedCount > 0 ? '0 0 4px' : '0 0 28px' }}>
         {wordCount} {plural(wordCount, ['slovo', 'slová', 'slov'])} · {profile?.total_points ?? 0} {plural(profile?.total_points ?? 0, ['bod', 'body', 'bodov'])} · séria {profile?.current_streak ?? 0} {plural(profile?.current_streak ?? 0, ['deň', 'dni', 'dní'])}
@@ -76,6 +76,6 @@ export default function TodayPage() {
           <button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }} onClick={learnMore}>Učiť sa nové slová</button>
         )}
       </div>
-    </motion.div>
+    </div>
   )
 }

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Fraunces, Inter } from 'next/font/google'
+import { ViewTransitions } from 'next-view-transitions'
 import Nav from '@/components/Nav'
 import SyncBootstrap from '@/components/SyncBootstrap'
 import './globals.css'
@@ -19,14 +20,16 @@ const themeInit = `try{const t=localStorage.getItem('theme');if(t)document.docum
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="sk" translate="no" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
-      {/* suppress: extensions like Grammarly inject body attributes before hydration */}
-      <body suppressHydrationWarning>
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
-        <SyncBootstrap />
-        <main className="app-main">{children}</main>
-        <Nav />
-      </body>
-    </html>
+    <ViewTransitions>
+      <html lang="sk" translate="no" className={`${fraunces.variable} ${inter.variable}`} suppressHydrationWarning>
+        {/* suppress: extensions like Grammarly inject body attributes before hydration */}
+        <body suppressHydrationWarning>
+          <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+          <SyncBootstrap />
+          <main className="app-main">{children}</main>
+          <Nav />
+        </body>
+      </html>
+    </ViewTransitions>
   )
 }
