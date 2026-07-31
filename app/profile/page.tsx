@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import { Link } from 'next-view-transitions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, PROFILE_ID } from '@/lib/db'
 import { FEED_DEFAULT_COUNT, getFeedCount, setFeedCount } from '@/lib/feed'
@@ -46,6 +47,7 @@ export default function ProfilePage() {
   }
 
   const unlocked = profile?.achievements ?? {}
+  const unlockedCount = ACHIEVEMENTS.filter((a) => unlocked[a.id]).length
 
   return (
     <div>
@@ -58,15 +60,12 @@ export default function ProfilePage() {
         </div>
       </div>
 
-      <h2 style={{ fontSize: 16 }}>Úspechy</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 20 }}>
-        {ACHIEVEMENTS.map((a) => (
-          <div key={a.id} className="card" style={{ padding: 12, opacity: unlocked[a.id] ? 1 : 0.45 }}>
-            <div style={{ fontWeight: 600, fontSize: 14 }}>{unlocked[a.id] ? '🏅' : '🔒'} {a.title}</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)' }}>{a.description}</div>
-          </div>
-        ))}
-      </div>
+      <Link href="/achievements" style={{ textDecoration: 'none', color: 'inherit' }}>
+        <div className="card" style={{ marginBottom: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}>
+          <span style={{ fontWeight: 600 }}>Úspechy</span>
+          <span style={{ color: 'var(--muted)' }}>{unlockedCount} / {ACHIEVEMENTS.length} →</span>
+        </div>
+      </Link>
 
       <h2 style={{ fontSize: 16 }}>Synchronizácia</h2>
       <div className="card" style={{ marginBottom: 20 }}>
