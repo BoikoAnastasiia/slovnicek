@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db, nowIso, PROFILE_ID } from '@/lib/db'
+import { plural } from '@/lib/plural'
 import { ACHIEVEMENTS } from '@/lib/scoring'
 import { getSupabase, getUserEmail, runSync, signInWithGoogle, signOut } from '@/lib/supabase'
 import type { ProfileRow, ReviewLogRow, WordRow } from '@/lib/types'
@@ -74,8 +75,8 @@ export default function ProfilePage() {
       <h1 className="serif" style={{ fontSize: 28 }}>Profil</h1>
       <div className="card" style={{ marginBottom: 16 }}>
         <div style={{ display: 'flex', gap: 24 }}>
-          <div><div className="serif" style={{ fontSize: 28 }}>{profile?.total_points ?? 0}</div><div style={{ color: 'var(--muted)', fontSize: 13 }}>bodov</div></div>
-          <div><div className="serif" style={{ fontSize: 28 }}>{profile?.current_streak ?? 0}</div><div style={{ color: 'var(--muted)', fontSize: 13 }}>séria dní</div></div>
+          <div><div className="serif" style={{ fontSize: 28 }}>{profile?.total_points ?? 0}</div><div style={{ color: 'var(--muted)', fontSize: 13 }}>{plural(profile?.total_points ?? 0, ['bod', 'body', 'bodov'])}</div></div>
+          <div><div className="serif" style={{ fontSize: 28 }}>{profile?.current_streak ?? 0}</div><div style={{ color: 'var(--muted)', fontSize: 13 }}>séria {plural(profile?.current_streak ?? 0, ['deň', 'dni', 'dní'])}</div></div>
           <div><div className="serif" style={{ fontSize: 28 }}>{profile?.best_streak ?? 0}</div><div style={{ color: 'var(--muted)', fontSize: 13 }}>najlepšia</div></div>
         </div>
       </div>
