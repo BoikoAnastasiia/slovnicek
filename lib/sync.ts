@@ -13,6 +13,7 @@ export async function getWatermark(table: string): Promise<string> {
   return (row?.value as string) ?? EPOCH
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function syncTable(table: Table<any, string>, name: string, transport: SyncTransport): Promise<void> {
   const dirty = await table.where('dirty').equals(1).toArray()
   if (dirty.length > 0) {
@@ -27,6 +28,7 @@ async function syncTable(table: Table<any, string>, name: string, transport: Syn
     if (row.updated_at > watermark) watermark = row.updated_at
     const local = await table.get(row.id)
     if (!local || row.updated_at > local.updated_at) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { user_id: _drop, ...rest } = raw as Record<string, unknown>
       await table.put({ ...rest, dirty: 0 })
     }
@@ -35,6 +37,7 @@ async function syncTable(table: Table<any, string>, name: string, transport: Syn
 }
 
 function stripLocal(row: Record<string, unknown>): Record<string, unknown> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { dirty: _drop, ...rest } = row
   return rest
 }
