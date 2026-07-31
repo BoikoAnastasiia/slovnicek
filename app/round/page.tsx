@@ -24,6 +24,8 @@ export default function RoundPage() {
   const [unlocked, setUnlocked] = useState<AchievementDef[]>([])
   const correctRef = useRef(0)
   const pointsRef = useRef(0)
+  const resultsRef = useRef<{ wordId: string; correct: boolean }[]>([])
+  const busyRef = useRef(false)
   const q = questions[index]
   const word = q ? wordsById.get(q.wordId) : undefined
 
@@ -46,32 +48,45 @@ export default function RoundPage() {
 
   async function submit(input: string) {
     if (phase !== 'answering' || !q) return
-    const correct = checkAnswer(q, input)
-    const now = new Date()
-    const w = await db.words.get(q.wordId)
-    if (w) await db.words.put(applyAnswer(w, correct, now))
-    const earned = correct ? pointsFor(q.type, combo) : 0
-    const iso = now.toISOString()
-    await db.review_logs.put({
-      id: crypto.randomUUID(), word_id: q.wordId, question_type: q.type, correct,
-      fsrs_grade: correct ? 3 : 1, points_earned: earned, answered_at: iso,
-      created_at: iso, updated_at: iso, deleted_at: null, dirty: 1,
-    })
-    if (correct) correctRef.current += 1
-    pointsRef.current += earned
-    setPoints(pointsRef.current)
-    setCombo(correct ? combo + 1 : 0)
-    setLastCorrect(correct)
-    setPhase('feedback')
+    if (busyRef.current) return
+    busyRef.current = true
+    try {
+      const correct = checkAnswer(q, input)
+      const now = new Date()
+      const w = await db.words.get(q.wordId)
+      if (w) await db.words.put(applyAnswer(w, correct, now))
+      const earned = correct ? pointsFor(q.type, combo) : 0
+      const iso = now.toISOString()
+      await db.review_logs.put({
+        id: crypto.randomUUID(), word_id: q.wordId, question_type: q.type, correct,
+        fsrs_grade: correct ? 3 : 1, points_earned: earned, answered_at: iso,
+        created_at: iso, updated_at: iso, deleted_at: null, dirty: 1,
+      })
+      if (correct) correctRef.current += 1
+      resultsRef.current.push({ wordId: q.wordId, correct })
+      pointsRef.current += earned
+      setPoints(pointsRef.current)
+      setCombo(correct ? combo + 1 : 0)
+      setLastCorrect(correct)
+      setPhase('feedback')
+    } finally {
+      busyRef.current = false
+    }
   }
 
   async function next() {
-    if (index + 1 < questions.length) {
-      setIndex(index + 1)
-      setTyped('')
-      setPhase('answering')
-    } else {
-      await finishRound()
+    if (busyRef.current) return
+    busyRef.current = true
+    try {
+      if (index + 1 < questions.length) {
+        setIndex(index + 1)
+        setTyped('')
+        setPhase('answering')
+      } else {
+        await finishRound()
+      }
+    } finally {
+      busyRef.current = false
     }
   }
 
@@ -132,6 +147,14 @@ export default function RoundPage() {
             <div style={{ fontSize: 13, color: 'var(--muted)' }}>{a.description}</div>
           </motion.div>
         ))}
+        <div style={{ fontSize: 13, color: 'var(--muted)', margin: '12px 0 20px' }}>
+          {resultsRef.current.map((r, i) => (
+            <div key={i}>
+              <span style={{ color: r.correct ? 'var(--accent)' : 'var(--danger)' }}>{r.correct ? '✓' : '✗'}</span>
+              {' '}{wordsById.get(r.wordId)?.slovak}
+            </div>
+          ))}
+        </div>
         <Link href="/"><button className="btn btn-primary" style={{ marginTop: 20 }}>Hotovo</button></Link>
       </motion.div>
     )
