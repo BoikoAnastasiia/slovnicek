@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { Link } from 'next-view-transitions'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
+import { Link, useTransitionRouter } from 'next-view-transitions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { motion } from 'framer-motion'
 import { db, PROFILE_ID } from '@/lib/db'
@@ -14,7 +14,7 @@ function todayStr(): string {
 }
 
 export default function TodayPage() {
-  const router = useRouter()
+  const router = useTransitionRouter()
   const dueCount = useLiveQuery(async () => {
     const all = await db.words.toArray()
     return dueWords(all, new Date()).length
@@ -62,6 +62,7 @@ export default function TodayPage() {
       )}
 
       <div className="card" style={{ textAlign: 'center', padding: 36 }}>
+        <Image src="/hero.png" alt="" width={200} height={136} style={{ display: 'block', margin: '0 auto 4px' }} />
         <div className="serif" style={{ fontSize: 64, lineHeight: 1 }}>{dueCount}</div>
         <p style={{ color: 'var(--muted)', margin: '8px 0 24px' }}>
           {dueCount === 0

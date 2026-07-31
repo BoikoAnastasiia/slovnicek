@@ -7,7 +7,7 @@ import { maturityOf } from '@/lib/fsrs'
 import type { WordRow } from '@/lib/types'
 import WordSheet from '@/components/WordSheet'
 
-const TIER_DOT = { new: 'var(--muted)', learning: 'var(--accent)', mature: 'gold' } as const
+const TIER_DOT = { new: 'var(--muted)', learning: 'var(--accent)', mature: 'var(--gold)' } as const
 
 export default function BasePage() {
   const [query, setQuery] = useState('')

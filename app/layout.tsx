@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   other: { google: 'notranslate' },
 }
-export const viewport: Viewport = { themeColor: '#2f6f5e' }
+export const viewport: Viewport = { themeColor: '#2b7de9' }
 
 const themeInit = `try{const t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch{}`
 

@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: 'Personal Slovak vocabulary trainer',
     start_url: '/',
     display: 'standalone',
-    background_color: '#faf9f7',
-    theme_color: '#2f6f5e',
-    icons: [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' }],
+    background_color: '#eef0f4',
+    theme_color: '#2b7de9',
+    icons: [{ src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' }],
   }
 }
