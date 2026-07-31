@@ -45,7 +45,7 @@ export default function WordSheet({ word, onClose }: { word: WordRow; onClose: (
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
               <h2 className="serif" style={{ fontSize: 32, margin: 0 }}>{word.slovak}</h2>
               {word.gender && <span style={{ color: 'var(--muted)' }}>{word.gender}.</span>}
-              {ttsAvailable() && <button className="btn" onClick={() => speakSk(word.slovak)}>🔊</button>}
+              {ttsAvailable() && <button className="btn" aria-label="Vypočuť" onClick={() => speakSk(word.slovak)}>🔊</button>}
             </div>
             <p style={{ fontSize: 18, margin: '6px 0' }}>{word.translation_ru}</p>
             {word.definition_sk && <p style={{ color: 'var(--muted)', fontStyle: 'italic' }}>{word.definition_sk}</p>}

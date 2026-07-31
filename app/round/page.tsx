@@ -206,7 +206,7 @@ export default function RoundPage() {
       <AnimatePresence mode="wait">
         <motion.div key={index} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.18 }}>
           {q.type.startsWith('listening') ? (
-            <button className="btn" style={{ display: 'block', margin: '0 auto 24px', fontSize: 32, padding: '20px 32px' }}
+            <button className="btn" aria-label="Prehrať slovo" style={{ display: 'block', margin: '0 auto 24px', fontSize: 32, padding: '20px 32px' }}
               onClick={() => speakSk(q.audioWord!)}>🔊</button>
           ) : (
             <p className={q.type === 'sk_definition' ? 'serif' : ''} style={{ fontSize: q.type === 'sk_definition' ? 24 : 28, textAlign: 'center', margin: '20px 0 32px' }}>
@@ -226,6 +226,7 @@ export default function RoundPage() {
           {phase === 'answering' && !q.choices && (
             <form onSubmit={(e) => { e.preventDefault(); submit(typed) }}>
               <input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus
+                aria-label="Odpoveď"
                 placeholder="Napíš po slovensky…" autoComplete="off" autoCapitalize="off" style={{ fontSize: 18, textAlign: 'center' }} />
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button type="button" className="btn" style={{ flex: 1 }} onClick={() => submit('')}>Neviem</button>
@@ -242,7 +243,7 @@ export default function RoundPage() {
               </p>
               <div className="serif" style={{ fontSize: 30, margin: '8px 0 2px' }}>
                 {word.slovak}
-                {ttsAvailable() && <button className="btn" style={{ marginLeft: 10, padding: '4px 10px' }} onClick={() => speakSk(word.slovak)}>🔊</button>}
+                {ttsAvailable() && <button className="btn" aria-label="Vypočuť" style={{ marginLeft: 10, padding: '4px 10px' }} onClick={() => speakSk(word.slovak)}>🔊</button>}
               </div>
               <p style={{ margin: '2px 0' }}>{word.translation_ru}</p>
               {word.definition_sk && <p style={{ color: 'var(--muted)', fontStyle: 'italic', margin: '2px 0' }}>{word.definition_sk}</p>}

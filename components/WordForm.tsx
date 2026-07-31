@@ -100,21 +100,22 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
       )}
       {mode === 'sk' ? (
         <>
-          <label>Slovenské slovo</label>
+          <label htmlFor="wf-slovak">Slovenské slovo</label>
           <div style={{ display: 'flex', gap: 8 }}>
-            <input value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} autoFocus required />
+            <input id="wf-slovak" value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} autoFocus required />
             <button type="button" className="btn" onClick={prefill} disabled={enriching}>
               {enriching ? '…' : 'Doplniť'}
             </button>
           </div>
-          <label>Preklad (RU)</label>
-          <input value={translationRu} onChange={(e) => setTranslationRu(e.target.value)} />
+          <label htmlFor="wf-translation-ru">Preklad (RU)</label>
+          <input id="wf-translation-ru" value={translationRu} onChange={(e) => setTranslationRu(e.target.value)} />
         </>
       ) : (
         <>
-          <label>Ruské slovo</label>
+          <label htmlFor="wf-translation-ru">Ruské slovo</label>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
+              id="wf-translation-ru"
               value={translationRu}
               onChange={(e) => { setTranslationRu(e.target.value); setRuMiss(false) }}
               autoFocus
@@ -128,28 +129,28 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
               Nenašlo sa v banke — doplň slovenské slovo ručne.
             </p>
           )}
-          <label>Slovenské slovo</label>
-          <input value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} required />
+          <label htmlFor="wf-slovak">Slovenské slovo</label>
+          <input id="wf-slovak" value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} required />
         </>
       )}
-      <label>Definícia (SK)</label>
-      <textarea value={definitionSk} onChange={(e) => setDefinitionSk(e.target.value)} rows={2} />
+      <label htmlFor="wf-definition-sk">Definícia (SK)</label>
+      <textarea id="wf-definition-sk" value={definitionSk} onChange={(e) => setDefinitionSk(e.target.value)} rows={2} />
       <div style={{ display: 'flex', gap: 12 }}>
         <div style={{ flex: 1 }}>
-          <label>Slovný druh</label>
-          <input value={partOfSpeech} onChange={(e) => setPartOfSpeech(e.target.value)} />
+          <label htmlFor="wf-pos">Slovný druh</label>
+          <input id="wf-pos" value={partOfSpeech} onChange={(e) => setPartOfSpeech(e.target.value)} />
         </div>
         <div style={{ width: 90 }}>
-          <label>Rod</label>
-          <input value={gender} onChange={(e) => setGender(e.target.value)} placeholder="m/ž/s" />
+          <label htmlFor="wf-gender">Rod</label>
+          <input id="wf-gender" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="m/ž/s" />
         </div>
       </div>
-      <label>Príklady (jeden na riadok)</label>
-      <textarea value={examples} onChange={(e) => setExamples(e.target.value)} rows={2} />
-      <label>Tagy (oddelené čiarkou)</label>
-      <input value={tags} onChange={(e) => setTags(e.target.value)} placeholder="práca, A2" />
-      <label>Poznámky</label>
-      <input value={notes} onChange={(e) => setNotes(e.target.value)} />
+      <label htmlFor="wf-examples">Príklady (jeden na riadok)</label>
+      <textarea id="wf-examples" value={examples} onChange={(e) => setExamples(e.target.value)} rows={2} />
+      <label htmlFor="wf-tags">Tagy (oddelené čiarkou)</label>
+      <input id="wf-tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="práca, A2" />
+      <label htmlFor="wf-notes">Poznámky</label>
+      <input id="wf-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       <button className="btn btn-primary" style={{ marginTop: 20, width: '100%' }}>
         {initial ? 'Uložiť zmeny' : 'Pridať slovo'}
       </button>

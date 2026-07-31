@@ -25,7 +25,7 @@ export default function BasePage() {
   return (
     <div>
       <h1 className="serif" style={{ fontSize: 28 }}>Slová <span style={{ color: 'var(--muted)', fontSize: 16 }}>({words.length})</span></h1>
-      <input placeholder="Hľadať…" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <input placeholder="Hľadať…" aria-label="Hľadať slová" value={query} onChange={(e) => setQuery(e.target.value)} />
       {allTags.length > 0 && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '10px 0' }}>
           {allTags.map((t) => (
