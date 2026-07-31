@@ -3,9 +3,11 @@ import { useState } from 'react'
 import type { WordRow } from '@/lib/types'
 import { newWord, saveWord } from '@/lib/db'
 import { enrich } from '@/lib/enrich'
+import { loadBank, searchBankByRussian } from '@/lib/feed'
 import { runSync } from '@/lib/supabase'
 
 export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSaved: () => void }) {
+  const [mode, setMode] = useState<'sk' | 'ru'>('sk')
   const [slovak, setSlovak] = useState(initial?.slovak ?? '')
   const [translationRu, setTranslationRu] = useState(initial?.translation_ru ?? '')
   const [definitionSk, setDefinitionSk] = useState(initial?.definition_sk ?? '')
@@ -15,6 +17,8 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
   const [tags, setTags] = useState((initial?.tags ?? []).join(', '))
   const [notes, setNotes] = useState(initial?.notes ?? '')
   const [enriching, setEnriching] = useState(false)
+  const [searching, setSearching] = useState(false)
+  const [ruMiss, setRuMiss] = useState(false)
 
   async function prefill() {
     if (!slovak.trim() || !navigator.onLine) return
@@ -26,6 +30,32 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
     if (e.examples?.length && !examples) setExamples(e.examples.join('\n'))
     if (e.notes && !notes) setNotes(e.notes)
     setEnriching(false)
+  }
+
+  async function findByRussian() {
+    setRuMiss(false)
+    if (!translationRu.trim()) return
+    setSearching(true)
+    const bank = await loadBank()
+    const hit = searchBankByRussian(bank, translationRu.trim())
+    if (hit) {
+      setSlovak(hit.slovak)
+      if (hit.part_of_speech && !partOfSpeech) setPartOfSpeech(hit.part_of_speech)
+      if (hit.gender && !gender) setGender(hit.gender)
+      if (hit.examples?.length && !examples) setExamples(hit.examples.join('\n'))
+      setTranslationRu(hit.translation_ru)
+      await prefillFor(hit.slovak)
+    } else {
+      setRuMiss(true)
+    }
+    setSearching(false)
+  }
+
+  async function prefillFor(word: string) {
+    if (!word.trim() || !navigator.onLine) return
+    const e = await enrich(word.trim())
+    if (e.definition_sk && !definitionSk) setDefinitionSk(e.definition_sk)
+    if (e.notes && !notes) setNotes(e.notes)
   }
 
   async function save(e: React.FormEvent) {
@@ -48,15 +78,60 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
 
   return (
     <form onSubmit={save}>
-      <label>Slovenské slovo</label>
-      <div style={{ display: 'flex', gap: 8 }}>
-        <input value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} autoFocus required />
-        <button type="button" className="btn" onClick={prefill} disabled={enriching}>
-          {enriching ? '…' : 'Doplniť'}
-        </button>
-      </div>
-      <label>Preklad (RU)</label>
-      <input value={translationRu} onChange={(e) => setTranslationRu(e.target.value)} />
+      {!initial && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+          <button
+            type="button"
+            className="btn"
+            style={mode === 'sk' ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
+            onClick={() => setMode('sk')}
+          >
+            Slovenské slovo
+          </button>
+          <button
+            type="button"
+            className="btn"
+            style={mode === 'ru' ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
+            onClick={() => setMode('ru')}
+          >
+            Ruské slovo
+          </button>
+        </div>
+      )}
+      {mode === 'sk' ? (
+        <>
+          <label>Slovenské slovo</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} autoFocus required />
+            <button type="button" className="btn" onClick={prefill} disabled={enriching}>
+              {enriching ? '…' : 'Doplniť'}
+            </button>
+          </div>
+          <label>Preklad (RU)</label>
+          <input value={translationRu} onChange={(e) => setTranslationRu(e.target.value)} />
+        </>
+      ) : (
+        <>
+          <label>Ruské slovo</label>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <input
+              value={translationRu}
+              onChange={(e) => { setTranslationRu(e.target.value); setRuMiss(false) }}
+              autoFocus
+            />
+            <button type="button" className="btn" onClick={findByRussian} disabled={searching}>
+              {searching ? '…' : 'Nájsť'}
+            </button>
+          </div>
+          {ruMiss && (
+            <p style={{ color: 'var(--muted)', fontSize: 13, margin: '4px 0' }}>
+              Nenašlo sa v banke — doplň slovenské slovo ručne.
+            </p>
+          )}
+          <label>Slovenské slovo</label>
+          <input value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} required />
+        </>
+      )}
       <label>Definícia (SK)</label>
       <textarea value={definitionSk} onChange={(e) => setDefinitionSk(e.target.value)} rows={2} />
       <div style={{ display: 'flex', gap: 12 }}>

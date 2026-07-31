@@ -32,6 +32,29 @@ export async function loadBank(fetchFn: typeof fetch = fetch): Promise<BankEntry
   }
 }
 
+// Looks up a bank entry by a Russian-language query against each entry's
+// comma-separated translation_ru variants. An exact (folded) match on any
+// variant always wins over a prefix match, and ties within a match tier are
+// broken by lowest rank. Prefix matching only kicks in once the query is at
+// least 3 characters, to avoid noisy single/double-letter hits.
+export function searchBankByRussian(bank: BankEntry[], query: string): BankEntry | null {
+  const q = fold(query)
+  if (!q) return null
+
+  const ordered = [...bank].sort((a, b) => a.rank - b.rank)
+  const variantsOf = (entry: BankEntry) => entry.translation_ru.split(',').map((v) => fold(v))
+
+  const exact = ordered.find((entry) => variantsOf(entry).some((v) => v === q))
+  if (exact) return exact
+
+  if (q.length >= 3) {
+    const prefix = ordered.find((entry) => variantsOf(entry).some((v) => v.startsWith(q)))
+    if (prefix) return prefix
+  }
+
+  return null
+}
+
 export async function getFeedCount(): Promise<number> {
   const row = await db.meta.get(FEED_COUNT_KEY)
   return typeof row?.value === 'number' ? row.value : FEED_DEFAULT_COUNT

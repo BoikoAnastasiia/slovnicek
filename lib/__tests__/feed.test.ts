@@ -8,6 +8,7 @@ import {
   introduceDailyWords,
   introduceMoreWords,
   loadBank,
+  searchBankByRussian,
   setFeedCount,
   type BankEntry,
 } from '@/lib/feed'
@@ -179,6 +180,47 @@ describe('introduceDailyWords', () => {
     expect(day1.map((r) => r.slovak)).toEqual(['slovo1', 'slovo2'])
     const day2 = await introduceDailyWords(bank, '2026-08-01')
     expect(day2.map((r) => r.slovak)).toEqual(['slovo3', 'slovo4'])
+  })
+})
+
+describe('searchBankByRussian', () => {
+  const bank: BankEntry[] = [
+    { rank: 1, slovak: 'ten', translation_ru: 'тот, этот', part_of_speech: 'pron', gender: '', definition_sk: '', examples: [] },
+    { rank: 2, slovak: 'testovat', translation_ru: 'тестировать', part_of_speech: 'verb', gender: '', definition_sk: '', examples: [] },
+    { rank: 3, slovak: 'test', translation_ru: 'тест, испытание', part_of_speech: 'noun', gender: '', definition_sk: '', examples: [] },
+  ]
+
+  it('returns null for an empty or whitespace query', () => {
+    expect(searchBankByRussian(bank, '')).toBeNull()
+    expect(searchBankByRussian(bank, '   ')).toBeNull()
+  })
+
+  it('returns null when no variant matches', () => {
+    expect(searchBankByRussian(bank, 'мир')).toBeNull()
+  })
+
+  it('matches a comma-separated variant, not just the first one', () => {
+    expect(searchBankByRussian(bank, 'этот')?.slovak).toBe('ten')
+  })
+
+  it('is case-insensitive', () => {
+    expect(searchBankByRussian(bank, 'ТЕСТ')?.slovak).toBe('test')
+  })
+
+  it('prefers an exact match over a prefix match, even at a higher rank', () => {
+    // 'тест' is an exact variant of entry rank 3 ('test'), but is also a
+    // prefix of entry rank 2's 'тестировать'. Exact must win.
+    expect(searchBankByRussian(bank, 'тест')?.slovak).toBe('test')
+  })
+
+  it('falls back to a prefix match (lowest rank) when no exact match exists', () => {
+    // 'тес' is a prefix of both 'тестировать' (rank 2) and 'тест' (rank 3),
+    // and an exact match for neither.
+    expect(searchBankByRussian(bank, 'тес')?.slovak).toBe('testovat')
+  })
+
+  it('does not prefix-match queries shorter than 3 characters', () => {
+    expect(searchBankByRussian(bank, 'те')).toBeNull()
   })
 })
 
