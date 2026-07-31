@@ -16,7 +16,7 @@ export default function WordSheet({ word, onClose }: { word: WordRow; onClose: (
     await saveWord({ ...word, prompt_mode: mode })
   }
   async function remove() {
-    if (confirm(`Vymazať „${word.slovak}"?`)) {
+    if (confirm(`Vymazať „${word.slovak}“?`)) {
       await softDeleteWord(word.id)
       onClose()
     }
@@ -49,7 +49,7 @@ export default function WordSheet({ word, onClose }: { word: WordRow; onClose: (
             </div>
             <p style={{ fontSize: 18, margin: '6px 0' }}>{word.translation_ru}</p>
             {word.definition_sk && <p style={{ color: 'var(--muted)', fontStyle: 'italic' }}>{word.definition_sk}</p>}
-            {word.examples.map((ex) => <p key={ex} style={{ margin: '4px 0' }}>„{ex}&quot;</p>)}
+            {word.examples.map((ex) => <p key={ex} style={{ margin: '4px 0' }}>„{ex}“</p>)}
             {word.tags.length > 0 && <p style={{ color: 'var(--muted)', fontSize: 13 }}>{word.tags.map((t) => `#${t}`).join(' ')}</p>}
 
             <div style={{ margin: '16px 0' }}>
