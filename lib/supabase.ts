@@ -1,36 +1,49 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js'
+import type { SupabaseClient } from '@supabase/supabase-js'
 import { syncAll, type SyncTransport } from './sync'
 
 let client: SupabaseClient | null = null
+let clientPromise: Promise<SupabaseClient | null> | null = null
 
-export function getSupabase(): SupabaseClient | null {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  if (!url || !key) return null
-  if (!client) client = createClient(url, key)
-  return client
+export function isSupabaseConfigured(): boolean {
+  return !!process.env.NEXT_PUBLIC_SUPABASE_URL && !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+}
+
+async function getClient(): Promise<SupabaseClient | null> {
+  if (client) return client
+  if (!isSupabaseConfigured()) return null
+  if (!clientPromise) {
+    clientPromise = import('@supabase/supabase-js').then(({ createClient }) => {
+      const url = process.env.NEXT_PUBLIC_SUPABASE_URL!
+      const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+      client = createClient(url, key)
+      return client
+    })
+  }
+  return clientPromise
 }
 
 export async function signInWithGoogle(): Promise<void> {
-  await getSupabase()?.auth.signInWithOAuth({
+  const supabase = await getClient()
+  await supabase?.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: `${window.location.origin}/profile` },
   })
 }
 
 export async function signOut(): Promise<void> {
-  await getSupabase()?.auth.signOut()
+  const supabase = await getClient()
+  await supabase?.auth.signOut()
 }
 
 export async function getUserId(): Promise<string | null> {
-  const supabase = getSupabase()
+  const supabase = await getClient()
   if (!supabase) return null
   const { data } = await supabase.auth.getUser()
   return data.user?.id ?? null
 }
 
 export async function getUserEmail(): Promise<string | null> {
-  const supabase = getSupabase()
+  const supabase = await getClient()
   if (!supabase) return null
   const { data } = await supabase.auth.getUser()
   return data.user?.email ?? null
@@ -54,7 +67,7 @@ function supabaseTransport(supabase: SupabaseClient, userId: string): SyncTransp
 
 export async function runSync(): Promise<'ok' | 'offline' | 'signed_out' | 'error'> {
   if (typeof navigator !== 'undefined' && !navigator.onLine) return 'offline'
-  const supabase = getSupabase()
+  const supabase = await getClient()
   if (!supabase) return 'signed_out'
   const userId = await getUserId()
   if (!userId) return 'signed_out'

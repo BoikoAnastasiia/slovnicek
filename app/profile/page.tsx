@@ -6,7 +6,7 @@ import { db, PROFILE_ID } from '@/lib/db'
 import { FEED_DEFAULT_COUNT, getFeedCount, setFeedCount } from '@/lib/feed'
 import { plural } from '@/lib/plural'
 import { ACHIEVEMENTS } from '@/lib/scoring'
-import { getSupabase, getUserEmail, runSync, signInWithGoogle, signOut } from '@/lib/supabase'
+import { isSupabaseConfigured, getUserEmail, runSync, signInWithGoogle, signOut } from '@/lib/supabase'
 
 type SyncState = 'idle' | 'syncing' | 'ok' | 'offline' | 'signed_out' | 'error'
 
@@ -64,8 +64,8 @@ export default function ProfilePage() {
 
       <h2 style={{ fontSize: 16 }}>Synchronizácia</h2>
       <div className="card" style={{ marginBottom: 20 }}>
-        {!getSupabase() && <p style={{ color: 'var(--muted)', margin: 0 }}>Supabase nie je nakonfigurovaný (.env.local).</p>}
-        {getSupabase() && !email && <button className="btn btn-primary" onClick={signInWithGoogle}>Prihlásiť cez Google</button>}
+        {!isSupabaseConfigured() && <p style={{ color: 'var(--muted)', margin: 0 }}>Supabase nie je nakonfigurovaný (.env.local).</p>}
+        {isSupabaseConfigured() && !email && <button className="btn btn-primary" onClick={signInWithGoogle}>Prihlásiť cez Google</button>}
         {email && (
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
             <span style={{ fontSize: 14 }}>{email}</span>

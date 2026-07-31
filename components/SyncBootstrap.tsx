@@ -13,6 +13,8 @@ export default function SyncBootstrap() {
 
   useEffect(() => {
     let cancelled = false
+    let idleHandle: number | null = null
+    let usedIdleCallback = false
 
     function clearPending() {
       if (timerRef.current !== null) {
@@ -39,7 +41,15 @@ export default function SyncBootstrap() {
       }
     }
 
-    trigger()
+    // Defer the initial sync until the browser is idle so it doesn't
+    // compete with page-load-critical work.
+    if (typeof window.requestIdleCallback === 'function') {
+      usedIdleCallback = true
+      idleHandle = window.requestIdleCallback(() => { trigger() }, { timeout: 4000 })
+    } else {
+      idleHandle = window.setTimeout(() => { trigger() }, 2500)
+    }
+
     const onOnline = () => {
       attemptRef.current = 0
       trigger()
@@ -49,6 +59,13 @@ export default function SyncBootstrap() {
       cancelled = true
       window.removeEventListener('online', onOnline)
       clearPending()
+      if (idleHandle !== null) {
+        if (usedIdleCallback) {
+          window.cancelIdleCallback?.(idleHandle)
+        } else {
+          clearTimeout(idleHandle)
+        }
+      }
     }
   }, [])
 
