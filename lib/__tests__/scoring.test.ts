@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { ACHIEVEMENTS, applyRoundToProfile, evaluateAchievements, pointsFor, type AchievementContext } from '@/lib/scoring'
+import { ACHIEVEMENTS, applyRoundToProfile, applyHintPenalty, evaluateAchievements, pointsFor, type AchievementContext } from '@/lib/scoring'
 import type { ProfileRow } from '@/lib/types'
 
 const profile = (over: Partial<ProfileRow> = {}): ProfileRow => ({
@@ -78,5 +78,16 @@ describe('evaluateAchievements', () => {
     expect(tooSmall.map((a) => a.id)).not.toContain('perfect_10')
     const ok = evaluateAchievements(ctx({ lastRound: { total: 10, correct: 10, points: 100 } }), {})
     expect(ok.map((a) => a.id)).toContain('perfect_10')
+  })
+})
+
+describe('applyHintPenalty', () => {
+  it('halves points rounded up when any hint was used', () => {
+    expect(applyHintPenalty(15, 1)).toBe(8)
+    expect(applyHintPenalty(15, 3)).toBe(8)
+    expect(applyHintPenalty(18, 2)).toBe(9)
+  })
+  it('leaves points untouched without hints', () => {
+    expect(applyHintPenalty(15, 0)).toBe(15)
   })
 })

@@ -87,6 +87,23 @@ function shuffle<T>(arr: T[], rng: () => number): T[] {
   return a
 }
 
+// Hint 1 shows the word shape; each further hint reveals one letter, never the whole word.
+export function hintMask(answer: string, hints: number): string {
+  const revealed = Math.min(hints - 1, maxHints(answer) - 1)
+  let seen = 0
+  return [...answer]
+    .map((ch) => {
+      if (ch === ' ') return ' '
+      seen += 1
+      return seen <= revealed ? ch : '_'
+    })
+    .join(' ')
+}
+
+export function maxHints(answer: string): number {
+  return [...answer].filter((ch) => ch !== ' ').length
+}
+
 export function checkAnswer(q: Question, input: string): boolean {
   if (q.choices) return input === q.answer
   return answersMatch(q.answer, input) || (q.accepted ?? []).some((a) => answersMatch(a, input))

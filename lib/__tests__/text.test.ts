@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { answersMatch, fold, matchesQuery } from '@/lib/text'
+import { answersMatch, closestAnswer, diffAnswer, fold, matchesQuery } from '@/lib/text'
 import type { WordRow } from '@/lib/types'
 
 const word = (over: Partial<WordRow>): WordRow => ({
@@ -41,5 +41,39 @@ describe('matchesQuery', () => {
     expect(matchesQuery(w, 'abstract')).toBe(true)
     expect(matchesQuery(w, 'xyz')).toBe(false)
     expect(matchesQuery(w, '')).toBe(true)
+  })
+})
+
+describe('diffAnswer', () => {
+  const chars = (typed: string, expected: string) =>
+    diffAnswer(typed, expected).map((s) => `${s.status[0]}:${s.char}`).join(' ')
+
+  it('marks a substituted letter wrong', () => {
+    expect(chars('divera', 'dôvera')).toBe('o:d w:i o:v o:e o:r o:a')
+  })
+  it('marks an extra letter wrong', () => {
+    const segs = diffAnswer('doverra', 'dôvera')
+    expect(segs.map((s) => s.char).join('')).toBe('doverra')
+    expect(segs.filter((s) => s.status === 'wrong').map((s) => s.char)).toEqual(['r'])
+    expect(segs.some((s) => s.status === 'missing')).toBe(false)
+  })
+  it('marks a skipped letter missing', () => {
+    expect(chars('dvera', 'dôvera')).toBe('o:d m:· o:v o:e o:r o:a')
+  })
+  it('ignores diacritic-only differences', () => {
+    expect(diffAnswer('dovera', 'dôvera').every((s) => s.status === 'ok')).toBe(true)
+  })
+  it('keeps the typed characters for display', () => {
+    expect(diffAnswer('dovera', 'dôvera').map((s) => s.char).join('')).toBe('dovera')
+  })
+})
+
+describe('closestAnswer', () => {
+  it('picks the accepted answer nearest to the input', () => {
+    expect(closestAnswer('čč', ['že', 'čo'])).toBe('čo')
+    expect(closestAnswer('žee', ['že', 'čo'])).toBe('že')
+  })
+  it('falls back to the first answer', () => {
+    expect(closestAnswer('xxxxx', ['že', 'čo'])).toBe('že')
   })
 })

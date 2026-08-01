@@ -5,13 +5,23 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { db, getProfile, uuid } from '@/lib/db'
 import { introduceMoreWords, loadBank } from '@/lib/feed'
 import { applyAnswer, dueWords, promptLangOf } from '@/lib/fsrs'
-import { buildRound, checkAnswer } from '@/lib/questions'
-import { applyRoundToProfile, evaluateAchievements, pointsFor, type AchievementDef } from '@/lib/scoring'
+import { buildRound, checkAnswer, hintMask, maxHints } from '@/lib/questions'
+import { applyHintPenalty, applyRoundToProfile, evaluateAchievements, pointsFor, type AchievementDef } from '@/lib/scoring'
+import { closestAnswer, diffAnswer } from '@/lib/text'
 import { onVoicesReady, speakSk, ttsAvailable } from '@/lib/tts'
 import { runSync } from '@/lib/supabase'
+import { plural } from '@/lib/plural'
 import type { Question, WordRow } from '@/lib/types'
 
 type Phase = 'loading' | 'answering' | 'feedback' | 'summary' | 'empty'
+
+function FlameIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+      <path d="M13.5.67s.74 2.65.74 4.8c0 2.06-1.35 3.73-3.41 3.73-2.07 0-3.63-1.67-3.63-3.73l.03-.36C5.21 7.51 4 10.62 4 14c0 4.42 3.58 8 8 8s8-3.58 8-8C20 8.61 17.41 3.8 13.5.67zM11.71 19c-1.78 0-3.22-1.4-3.22-3.14 0-1.62 1.05-2.76 2.81-3.12 1.77-.36 3.6-1.21 4.62-2.58.39 1.29.59 2.65.59 4.04 0 2.65-2.15 4.8-4.8 4.8z" />
+    </svg>
+  )
+}
 
 export default function RoundPage() {
   const [questions, setQuestions] = useState<Question[]>([])
@@ -19,6 +29,9 @@ export default function RoundPage() {
   const [index, setIndex] = useState(0)
   const [phase, setPhase] = useState<Phase>('loading')
   const [typed, setTyped] = useState('')
+  const [hints, setHints] = useState(0)
+  const [lastInput, setLastInput] = useState('')
+  const [lastEarned, setLastEarned] = useState(0)
   const [lastCorrect, setLastCorrect] = useState(false)
   const [combo, setCombo] = useState(0)
   const [points, setPoints] = useState(0)
@@ -59,6 +72,9 @@ export default function RoundPage() {
       }
       setIndex(0)
       setTyped('')
+      setHints(0)
+      setLastInput('')
+      setLastEarned(0)
       setLastCorrect(false)
       setCombo(0)
       setPoints(0)
@@ -86,7 +102,7 @@ export default function RoundPage() {
       const now = new Date()
       const w = await db.words.get(q.wordId)
       if (w) await db.words.put(applyAnswer(w, correct, now))
-      const earned = correct ? pointsFor(q.type, combo) : 0
+      const earned = correct ? applyHintPenalty(pointsFor(q.type, combo), hints) : 0
       const iso = now.toISOString()
       await db.review_logs.put({
         id: uuid(), word_id: q.wordId, question_type: q.type, correct,
@@ -98,6 +114,8 @@ export default function RoundPage() {
       pointsRef.current += earned
       setPoints(pointsRef.current)
       setCombo(correct ? combo + 1 : 0)
+      setLastInput(input)
+      setLastEarned(earned)
       setLastCorrect(correct)
       setPhase('feedback')
     } finally {
@@ -112,6 +130,7 @@ export default function RoundPage() {
       if (index + 1 < questions.length) {
         setIndex(index + 1)
         setTyped('')
+        setHints(0)
         setPhase('answering')
       } else {
         await finishRound()
@@ -196,12 +215,44 @@ export default function RoundPage() {
     )
   }
 
+  const answered = index + (phase === 'feedback' ? 1 : 0)
+  const progressPct = questions.length ? (answered / questions.length) * 100 : 0
+
   return (
     <div className="round-page">
-      <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--muted)', fontSize: 14, marginBottom: 24 }}>
-        <span>{index + 1} / {questions.length}</span>
-        {combo > 1 && <span>🔥 x{combo}</span>}
-        <span>{points} b</span>
+      <div className="round-top">
+        <span className="chip chip-count">{index + 1} / {questions.length}</span>
+        <AnimatePresence>
+          {combo > 1 && (
+            <motion.span key="combo" className="chip chip-combo"
+              initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 24 }}>
+              <FlameIcon />
+              <motion.span key={combo} initial={{ scale: 1.5 }} animate={{ scale: 1 }} style={{ display: 'inline-block' }}>
+                ×{combo}
+              </motion.span>
+            </motion.span>
+          )}
+        </AnimatePresence>
+        <span className="chip chip-score">
+          <span className="coin" aria-hidden />
+          <motion.span key={points} className="serif" initial={{ scale: points > 0 ? 1.35 : 1 }} animate={{ scale: 1 }}
+            style={{ display: 'inline-block' }}>
+            {points}
+          </motion.span>
+          <AnimatePresence>
+            {phase === 'feedback' && lastEarned > 0 && (
+              <motion.span key={`gain-${index}`} className="chip-gain"
+                initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: -16 }} exit={{ opacity: 0 }}
+                transition={{ duration: 0.5, ease: 'easeOut' }}>
+                +{lastEarned}
+              </motion.span>
+            )}
+          </AnimatePresence>
+        </span>
+      </div>
+      <div className="progress-track">
+        <div className="progress-fill" data-hot={combo > 1 ? '' : undefined} style={{ width: `${progressPct}%` }} />
       </div>
 
       <AnimatePresence mode="wait">
@@ -226,10 +277,21 @@ export default function RoundPage() {
           )}
           {phase === 'answering' && !q.choices && (
             <form onSubmit={(e) => { e.preventDefault(); submit(typed) }}>
+              {hints > 0 && (
+                <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
+                  <p className="hint-mask">{hintMask(q.answer, hints)}</p>
+                  <p className="hint-note">{maxHints(q.answer)} {plural(maxHints(q.answer), ['písmeno', 'písmená', 'písmen'])} · nápoveda = polovica bodov</p>
+                </motion.div>
+              )}
               <input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus
                 aria-label="Odpoveď"
                 placeholder="Napíš po slovensky…" autoComplete="off" autoCapitalize="off" style={{ fontSize: 18, textAlign: 'center' }} />
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                <button type="button" className="btn" style={{ padding: '12px 14px' }}
+                  onClick={() => setHints((h) => Math.min(h + 1, maxHints(q.answer)))}
+                  disabled={hints >= maxHints(q.answer)}>
+                  Nápoveda
+                </button>
                 <button type="button" className="btn" style={{ flex: 1 }} onClick={() => submit('')}>Neviem</button>
                 <button className="btn btn-primary" style={{ flex: 2 }}>Odpovedať</button>
               </div>
@@ -240,8 +302,16 @@ export default function RoundPage() {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card"
               style={{ borderColor: lastCorrect ? 'var(--accent)' : 'var(--danger)', textAlign: 'center' }}>
               <p style={{ color: lastCorrect ? 'var(--accent)' : 'var(--danger)', fontWeight: 600, margin: 0 }}>
-                {lastCorrect ? `Správne +${pointsFor(q.type, combo - 1)}` : 'Nesprávne'}
+                {lastCorrect ? `Správne +${lastEarned}` : 'Nesprávne'}
               </p>
+              {!lastCorrect && !q.choices && lastInput.trim() !== '' && (
+                <p className="answer-diff">
+                  <span style={{ color: 'var(--muted)', fontSize: 13, letterSpacing: 0 }}>Tvoja odpoveď: </span>
+                  {diffAnswer(lastInput, closestAnswer(lastInput, [q.answer, ...(q.accepted ?? [])])).map((s, i) => (
+                    <span key={i} className={s.status === 'ok' ? undefined : 'diff-bad'}>{s.char}</span>
+                  ))}
+                </p>
+              )}
               <div className="serif" style={{ fontSize: 30, margin: '8px 0 2px' }}>
                 {word.slovak}
                 {ttsAvailable() && <button className="btn" aria-label="Vypočuť" style={{ marginLeft: 10, padding: '4px 10px' }} onClick={() => speakSk(word.slovak)}>🔊</button>}

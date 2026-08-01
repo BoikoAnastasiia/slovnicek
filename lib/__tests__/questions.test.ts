@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildRound, checkAnswer } from '@/lib/questions'
+import { buildRound, checkAnswer, hintMask, maxHints } from '@/lib/questions'
 import { newCard, MATURE_STABILITY_DAYS } from '@/lib/fsrs'
 import type { WordRow } from '@/lib/types'
 
@@ -147,5 +147,22 @@ describe('shared-gloss synonyms', () => {
     expect(qs[4].type).toBe('listening_typed')
     expect(checkAnswer(qs[4], 'čo')).toBe(false)
     expect(checkAnswer(qs[4], 'že')).toBe(true)
+  })
+})
+
+describe('hints', () => {
+  it('first hint shows only blanks, later hints reveal letters one by one', () => {
+    expect(hintMask('dôvera', 1)).toBe('_ _ _ _ _ _')
+    expect(hintMask('dôvera', 2)).toBe('d _ _ _ _ _')
+    expect(hintMask('dôvera', 3)).toBe('d ô _ _ _ _')
+  })
+  it('never reveals the whole word', () => {
+    expect(hintMask('čo', 5)).toBe('č _')
+    expect(maxHints('čo')).toBe(2)
+    expect(maxHints('dôvera')).toBe(6)
+  })
+  it('keeps spaces visible in multi-word answers', () => {
+    expect(hintMask('dobrý deň', 1)).toBe('_ _ _ _ _   _ _ _')
+    expect(hintMask('dobrý deň', 7)).toBe('d o b r ý   d _ _')
   })
 })

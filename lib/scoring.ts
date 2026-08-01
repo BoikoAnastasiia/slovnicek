@@ -12,6 +12,10 @@ export function pointsFor(type: QuestionType, combo: number): number {
   return Math.round(BASE_POINTS[type] * (1 + 0.1 * Math.min(combo, 10)))
 }
 
+export function applyHintPenalty(points: number, hintsUsed: number): number {
+  return hintsUsed > 0 ? Math.ceil(points / 2) : points
+}
+
 export interface RoundResult { total: number; correct: number; points: number }
 
 export function applyRoundToProfile(profile: ProfileRow, round: RoundResult, today: string): ProfileRow {
