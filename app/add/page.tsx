@@ -1,22 +1,29 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import WordForm from '@/components/WordForm'
+import Toast from '@/components/Toast'
 
 export default function AddPage() {
-  const [savedFlash, setSavedFlash] = useState(false)
+  const [toast, setToast] = useState<{ id: number; text: string } | null>(null)
   const [formKey, setFormKey] = useState(0)
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(null), 2600)
+    return () => clearTimeout(t)
+  }, [toast])
+
   return (
     <div>
       <h1 className="serif" style={{ fontSize: 28 }}>Nové slovo</h1>
-      {savedFlash && <p style={{ color: 'var(--accent)' }}>Uložené ✓</p>}
       <WordForm
         key={formKey}
-        onSaved={() => {
-          setSavedFlash(true)
+        onSaved={(saved) => {
           setFormKey((k) => k + 1)
-          setTimeout(() => setSavedFlash(false), 2000)
+          setToast({ id: Date.now(), text: `„${saved.slovak}“ pridané ✓` })
         }}
       />
+      <Toast toast={toast} />
     </div>
   )
 }

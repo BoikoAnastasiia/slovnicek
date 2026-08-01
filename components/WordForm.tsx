@@ -6,7 +6,7 @@ import { enrich } from '@/lib/enrich'
 import { loadBank, searchBankByRussian } from '@/lib/feed'
 import { runSync } from '@/lib/supabase'
 
-export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSaved: () => void }) {
+export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSaved: (saved: WordRow) => void }) {
   const [mode, setMode] = useState<'sk' | 'ru'>('sk')
   const [slovak, setSlovak] = useState(initial?.slovak ?? '')
   const [translationRu, setTranslationRu] = useState(initial?.translation_ru ?? '')
@@ -71,9 +71,10 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
       tags: tags.split(',').map((s) => s.trim()).filter(Boolean),
       notes: notes.trim(),
     }
-    await saveWord(initial ? { ...initial, ...fields } : newWord(fields))
+    const row = initial ? { ...initial, ...fields } : newWord(fields)
+    await saveWord(row)
     runSync().catch(() => {})
-    onSaved()
+    onSaved(row)
   }
 
   return (

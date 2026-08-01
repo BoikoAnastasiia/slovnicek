@@ -175,6 +175,25 @@ body::before {
   .progress-fill { transition: none; }
 }
 
+/* toast */
+.toast-wrap {
+  position: fixed;
+  inset-inline: 0;
+  top: 18px;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 60;
+}
+.toast {
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  padding: 12px 24px;
+  border-radius: 999px;
+  box-shadow: 0 3px 0 var(--accent-edge), 0 8px 24px rgba(16, 24, 40, .18);
+}
+
 input, textarea, select {
   font: inherit;
   color: var(--text);
