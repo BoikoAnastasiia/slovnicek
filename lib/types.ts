@@ -73,6 +73,7 @@ export interface Question {
   type: QuestionType
   prompt: string         // RU translation, SK definition, or '' for listening
   answer: string         // canonical correct answer string
+  accepted?: string[]    // extra correct answers (words sharing the RU gloss), typed RU→SK only
   choices?: string[]     // present for mc types, length 4, shuffled
   audioWord?: string     // Slovak word to speak for listening types
 }

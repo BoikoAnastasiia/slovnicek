@@ -35,7 +35,8 @@ export default function RoundPage() {
     const all = await db.words.toArray()
     const due = dueWords(all, new Date())
     if (due.length === 0) { setPhase('empty'); return }
-    const round = buildRound(due, all, { ttsAvailable: ttsAvailable(), rng: Math.random })
+    const bank = await loadBank().catch(() => [])
+    const round = buildRound(due, all, { ttsAvailable: ttsAvailable(), rng: Math.random, bank })
     setWordsById(new Map(all.map((w) => [w.id, w])))
     setQuestions(round)
     setPhase('answering')

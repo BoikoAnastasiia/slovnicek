@@ -1,6 +1,6 @@
 import type { Question, WordRow } from './types'
 import { maturityOf, promptLangOf } from './fsrs'
-import { answersMatch } from './text'
+import { answersMatch, glossesOverlap } from './text'
 
 export const ROUND_SIZE = 10
 
@@ -13,7 +13,9 @@ export const FALLBACK_RU = [
   'слово', 'жизнь', 'мир', 'глаз', 'голова', 'семья', 'еда', 'окно', 'стол', 'море',
 ]
 
-interface BuildOpts { ttsAvailable: boolean; rng: () => number; roundSize?: number }
+interface GlossEntry { slovak: string; translation_ru: string }
+
+interface BuildOpts { ttsAvailable: boolean; rng: () => number; roundSize?: number; bank?: GlossEntry[] }
 
 export function buildRound(due: WordRow[], all: WordRow[], opts: BuildOpts): Question[] {
   const size = opts.roundSize ?? ROUND_SIZE
@@ -43,11 +45,21 @@ function buildQuestion(w: WordRow, all: WordRow[], index: number, opts: BuildOpt
       choices: shuffle([w.slovak, ...distractors], opts.rng), answer: w.slovak,
     }
   }
-  return { wordId: w.id, type: 'typed_ru_to_sk', prompt: w.translation_ru, answer: w.slovak }
+  return { wordId: w.id, type: 'typed_ru_to_sk', prompt: w.translation_ru, answer: w.slovak, accepted: synonymsOf(w, all, opts.bank) }
+}
+
+// words that share a RU gloss variant with the target — equally correct answers to its prompt
+function synonymsOf(w: WordRow, all: WordRow[], bank: GlossEntry[] = []): string[] {
+  const pool: GlossEntry[] = [...all.filter((o) => o.id !== w.id && !o.deleted_at), ...bank]
+  const found = pool
+    .filter((e) => e.slovak !== w.slovak && glossesOverlap(e.translation_ru, w.translation_ru))
+    .map((e) => e.slovak)
+  return [...new Set(found)]
 }
 
 function candidates(all: WordRow[], w: WordRow, field: (o: WordRow) => string): string[] {
-  const pool = all.filter((o) => o.id !== w.id && !o.deleted_at && field(o).trim() !== '')
+  const pool = all.filter((o) => o.id !== w.id && !o.deleted_at && field(o).trim() !== ''
+    && !glossesOverlap(o.translation_ru, w.translation_ru))
   const samePos = pool.filter((o) => o.part_of_speech === w.part_of_speech && w.part_of_speech !== '')
   const chosen = samePos.length >= 3 ? samePos : pool
   return [...new Set(chosen.map(field))]
@@ -77,5 +89,5 @@ function shuffle<T>(arr: T[], rng: () => number): T[] {
 
 export function checkAnswer(q: Question, input: string): boolean {
   if (q.choices) return input === q.answer
-  return answersMatch(q.answer, input)
+  return answersMatch(q.answer, input) || (q.accepted ?? []).some((a) => answersMatch(a, input))
 }

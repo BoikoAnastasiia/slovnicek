@@ -93,3 +93,59 @@ describe('checkAnswer', () => {
     expect(checkAnswer(q, 'a')).toBe(false)
   })
 })
+
+describe('shared-gloss synonyms', () => {
+  const ze = () => word({ slovak: 'že', translation_ru: 'что', part_of_speech: 'conj' })
+  const co = () => word({ slovak: 'čo', translation_ru: 'что', part_of_speech: 'pron' })
+
+  it('MC distractors never include a word sharing the gloss with the answer', () => {
+    const due = [ze()]
+    const pool = [due[0], co(), word(), word(), word()]
+    const [q] = buildRound(due, pool, opts)
+    expect(q.type).toBe('mc_ru_to_sk')
+    expect(q.choices).not.toContain('čo')
+  })
+
+  it('listening MC distractors never overlap the gloss of the answer', () => {
+    const due = [word(), word(), word(), word(), ze()]
+    const pool = [due[4], word({ slovak: 'čo', translation_ru: 'что, какой', part_of_speech: 'conj' }), word(), word()]
+    const qs = buildRound(due, pool, { ...opts, ttsAvailable: true })
+    expect(qs[4].type).toBe('listening_mc')
+    expect(qs[4].choices).not.toContain('что, какой')
+  })
+
+  it('typed answers accept a synonym from the collection', () => {
+    const target = ze()
+    target.fsrs = learningFsrs()
+    const [q] = buildRound([target], [target, co()], opts)
+    expect(q.type).toBe('typed_ru_to_sk')
+    expect(checkAnswer(q, 'čo')).toBe(true)
+    expect(checkAnswer(q, 'že')).toBe(true)
+    expect(checkAnswer(q, 'ten')).toBe(false)
+  })
+
+  it('typed answers accept a synonym from the bank', () => {
+    const target = ze()
+    target.fsrs = learningFsrs()
+    const bank = [{ slovak: 'čo', translation_ru: 'что' }]
+    const [q] = buildRound([target], [target], { ...opts, bank })
+    expect(checkAnswer(q, 'čo')).toBe(true)
+  })
+
+  it('comma-separated gloss variants count as overlap', () => {
+    const target = word({ slovak: 'ten', translation_ru: 'тот, этот' })
+    target.fsrs = learningFsrs()
+    const other = word({ slovak: 'tento', translation_ru: 'этот' })
+    const [q] = buildRound([target], [target, other], opts)
+    expect(checkAnswer(q, 'tento')).toBe(true)
+  })
+
+  it('listening typed still requires the exact word heard', () => {
+    const due = [word({ fsrs: learningFsrs() }), word({ fsrs: learningFsrs() }), word({ fsrs: learningFsrs() }), word({ fsrs: learningFsrs() }), ze()]
+    due[4].fsrs = learningFsrs()
+    const qs = buildRound(due, [...due, co()], { ...opts, ttsAvailable: true })
+    expect(qs[4].type).toBe('listening_typed')
+    expect(checkAnswer(qs[4], 'čo')).toBe(false)
+    expect(checkAnswer(qs[4], 'že')).toBe(true)
+  })
+})
