@@ -18,6 +18,7 @@
     "dexie-react-hooks": "^4.4.0",
     "framer-motion": "^12.43.0",
     "next": "15.5.22",
+    "next-intl": "^4.13.4",
     "next-view-transitions": "^0.3.5",
     "react": "19.1.0",
     "react-dom": "19.1.0",
