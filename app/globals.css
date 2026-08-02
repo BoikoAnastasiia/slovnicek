@@ -225,6 +225,11 @@ label { font-size: 13px; color: var(--muted); display: block; margin: 14px 0 4px
   border-radius: 999px;
 }
 .nav a.active { color: var(--accent-strong); background: var(--accent-soft); font-weight: 600; }
+.nav a { white-space: nowrap; }
+@media (max-width: 420px) {
+  .nav { gap: 2px; }
+  .nav a { padding: 8px 10px; font-size: 13px; }
+}
 
 .nav { view-transition-name: nav; }
 

@@ -2,18 +2,20 @@
 import { useEffect } from 'react'
 import { Link } from 'next-view-transitions'
 import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 const LINKS = [
-  { href: '/', label: 'Dnes' },
-  { href: '/base', label: 'Slová' },
-  { href: '/add', label: '+ Pridať' },
-  { href: '/profile', label: 'Profil' },
-]
+  { href: '/', key: 'today' },
+  { href: '/base', key: 'words' },
+  { href: '/add', key: 'add' },
+  { href: '/profile', key: 'profile' },
+] as const
 
 const TAB_ORDER = ['/', '/base', '/add', '/profile']
 
 export default function Nav() {
   const pathname = usePathname()
+  const t = useTranslations('nav')
 
   // Clear the direction hint once the transition it triggered has settled, so a
   // later non-Nav navigation (e.g. round summary -> /) doesn't inherit a stale
@@ -36,7 +38,7 @@ export default function Nav() {
     <nav className="nav">
       {LINKS.map((l) => (
         <Link key={l.href} href={l.href} className={pathname === l.href ? 'active' : ''} onClick={() => handleClick(l.href)}>
-          {l.label}
+          {t(l.key)}
         </Link>
       ))}
     </nav>

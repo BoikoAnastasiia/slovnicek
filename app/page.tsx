@@ -4,16 +4,17 @@ import Image from 'next/image'
 import { Link, useTransitionRouter } from 'next-view-transitions'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { db, PROFILE_ID } from '@/lib/db'
 import { introduceDailyWords, introduceMoreWords, loadBank } from '@/lib/feed'
 import { dueWords } from '@/lib/fsrs'
-import { plural } from '@/lib/plural'
 
 function todayStr(): string {
   return new Date().toISOString().slice(0, 10)
 }
 
 export default function TodayPage() {
+  const t = useTranslations('today')
   const router = useTransitionRouter()
   const dueCount = useLiveQuery(async () => {
     const all = await db.words.toArray()
@@ -53,11 +54,11 @@ export default function TodayPage() {
     <div className="today-page">
       <h1 className="serif" style={{ fontSize: 34, margin: '8px 0 4px' }}>Slovníček</h1>
       <p style={{ color: 'var(--muted)', margin: introducedCount > 0 ? '0 0 4px' : '0 0 28px' }}>
-        {wordCount} {plural(wordCount, ['slovo', 'slová', 'slov'])} · {profile?.total_points ?? 0} {plural(profile?.total_points ?? 0, ['bod', 'body', 'bodov'])} · séria {profile?.current_streak ?? 0} {plural(profile?.current_streak ?? 0, ['deň', 'dni', 'dní'])}
+        {t('words', { count: wordCount })} · {t('points', { count: profile?.total_points ?? 0 })} · {t('streak', { count: profile?.current_streak ?? 0 })}
       </p>
       {introducedCount > 0 && (
         <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ color: 'var(--muted)', margin: '0 0 24px', fontSize: 14 }}>
-          +{introducedCount} {plural(introducedCount, ['nové slovo', 'nové slová', 'nových slov'])} z prísunu
+          {t('feedIntro', { count: introducedCount })}
         </motion.p>
       )}
 
@@ -66,15 +67,15 @@ export default function TodayPage() {
         <div className="serif" style={{ fontSize: 64, lineHeight: 1 }}>{dueCount}</div>
         <p style={{ color: 'var(--muted)', margin: '8px 0 24px' }}>
           {dueCount === 0
-            ? (bankExhausted ? 'Všetko zopakované. Pridaj nové slová!' : 'Všetko zopakované. Uč sa nové slová z databázy!')
-            : `${plural(dueCount, ['slovo', 'slová', 'slov'])} na zopakovanie`}
+            ? (bankExhausted ? t('allDoneAdd') : t('allDoneBank'))
+            : t('dueLabel', { count: dueCount })}
         </p>
         {dueCount > 0 ? (
-          <Link href="/round"><button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }}>Začať kolo</button></Link>
+          <Link href="/round"><button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }}>{t('startRound')}</button></Link>
         ) : bankExhausted ? (
-          <Link href="/add"><button className="btn">Pridať slovo</button></Link>
+          <Link href="/add"><button className="btn">{t('addWord')}</button></Link>
         ) : (
-          <button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }} onClick={learnMore}>Učiť sa nové slová</button>
+          <button className="btn btn-primary" style={{ fontSize: 17, padding: '14px 40px' }} onClick={learnMore}>{t('learnNew')}</button>
         )}
       </div>
     </div>

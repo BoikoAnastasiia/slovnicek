@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "today": "Today",
+    "words": "Words",
+    "add": "+ Add",
+    "profile": "Profile"
+  },
+  "today": {
+    "words": "{count, plural, one {# word} other {# words}}",
+    "points": "{count, plural, one {# point} other {# points}}",
+    "streak": "{count, plural, one {# day} other {# days}} streak",
+    "feedIntro": "+{count, plural, one {# new word} other {# new words}} from the feed",
+    "dueLabel": "{count, plural, one {word to review} other {words to review}}",
+    "allDoneBank": "All reviewed. Learn new words from the bank!",
+    "allDoneAdd": "All reviewed. Add new words!",
+    "startRound": "Start round",
+    "learnNew": "Learn new words",
+    "addWord": "Add a word"
+  },
+  "round": {
+    "empty": "Nothing to review",
+    "addWords": "Add words",
+    "done": "Round complete",
+    "correctOf": "{correct} / {total} correct",
+    "finish": "Done",
+    "moreTen": "10 more new words",
+    "typedPlaceholder": "Type in Slovak…",
+    "answerAria": "Answer",
+    "hint": "Hint",
+    "hintNote": "{count, plural, one {# letter} other {# letters}} · hint = half points",
+    "dontKnow": "I don't know",
+    "answer": "Answer",
+    "correct": "Correct +{points}",
+    "wrong": "Wrong",
+    "yourAnswer": "Your answer: ",
+    "next": "Next ⏎",
+    "playWord": "Play the word",
+    "listen": "Listen"
+  },
+  "add": {
+    "title": "New word",
+    "added": "“{word}” added ✓"
+  },
+  "form": {
+    "modeSk": "Slovak word",
+    "modeRu": "Russian word",
+    "translationRu": "Translation (RU)",
+    "enrich": "Auto-fill",
+    "find": "Find",
+    "ruMiss": "Not found in the bank — enter the Slovak word manually.",
+    "definitionSk": "Definition (SK)",
+    "partOfSpeech": "Part of speech",
+    "gender": "Gender",
+    "genderPlaceholder": "m/ž/s",
+    "examples": "Examples (one per line)",
+    "tags": "Tags (comma-separated)",
+    "tagsPlaceholder": "work, A2",
+    "notes": "Notes",
+    "submitAdd": "Add word",
+    "submitSave": "Save changes"
+  },
+  "base": {
+    "title": "Words",
+    "searchPlaceholder": "Search…",
+    "searchAria": "Search words",
+    "empty": "No words."
+  },
+  "sheet": {
+    "tierNew": "new",
+    "tierLearning": "learning",
+    "tierMature": "mature",
+    "mode": "mode",
+    "langSk": "Slovak",
+    "langRu": "Russian",
+    "edit": "Edit",
+    "pinSk": "Pin SK",
+    "pinRu": "Pin RU",
+    "autoMode": "Auto mode",
+    "delete": "Delete",
+    "confirmDelete": "Delete “{word}”?",
+    "listen": "Listen"
+  },
+  "profile": {
+    "title": "Profile",
+    "pointsLabel": "{count, plural, one {point} other {points}}",
+    "streakLabel": "{count, plural, one {day} other {days}} streak",
+    "bestLabel": "best",
+    "achievements": "Achievements",
+    "sync": "Sync",
+    "notConfigured": "Supabase is not configured (.env.local).",
+    "signIn": "Sign in with Google",
+    "syncNow": "Sync now",
+    "syncing": "Syncing…",
+    "signOut": "Sign out",
+    "syncOk": "✓ done",
+    "syncOffline": "offline",
+    "syncError": "error",
+    "appearance": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "language": "Language",
+    "feed": "Daily feed",
+    "feedOff": "Off"
+  },
+  "achievementsPage": {
+    "title": "Achievements",
+    "unlockedOf": "{count} / {total} unlocked"
+  },
+  "achievements": {
+    "first_word": {
+      "title": "First word",
+      "description": "Save your first word"
+    },
+    "words_10": {
+      "title": "Collector",
+      "description": "10 words in your collection"
+    },
+    "words_50": {
+      "title": "Half a hundred",
+      "description": "50 words in your collection"
+    },
+    "words_100": {
+      "title": "Vocabulary",
+      "description": "100 words in your collection"
+    },
+    "words_500": {
+      "title": "Library",
+      "description": "500 words in your collection"
+    },
+    "words_1000": {
+      "title": "A thousand words",
+      "description": "1,000 words in your collection"
+    },
+    "words_2000": {
+      "title": "The whole bank",
+      "description": "2,000 words in your collection"
+    },
+    "reviews_100": {
+      "title": "A hundred reviews",
+      "description": "Answer 100 questions"
+    },
+    "reviews_500": {
+      "title": "Five hundred reviews",
+      "description": "Answer 500 questions"
+    },
+    "reviews_1000": {
+      "title": "A thousand reviews",
+      "description": "Answer 1,000 questions"
+    },
+    "reviews_5000": {
+      "title": "Five thousand reviews",
+      "description": "Answer 5,000 questions"
+    },
+    "streak_3": {
+      "title": "Three days",
+      "description": "3-day streak"
+    },
+    "streak_7": {
+      "title": "A week straight",
+      "description": "7-day streak"
+    },
+    "streak_30": {
+      "title": "A month straight",
+      "description": "30-day streak"
+    },
+    "streak_100": {
+      "title": "A hundred days",
+      "description": "100-day streak"
+    },
+    "first_sk_mode": {
+      "title": "In Slovak!",
+      "description": "First word in Slovak mode"
+    },
+    "sk_mode_10": {
+      "title": "Ten in Slovak",
+      "description": "10 words in Slovak mode"
+    },
+    "sk_mode_100": {
+      "title": "A hundred in Slovak",
+      "description": "100 words in Slovak mode"
+    },
+    "perfect_round": {
+      "title": "Clean round",
+      "description": "A round of 5+ with no mistakes"
+    },
+    "perfect_10": {
+      "title": "Perfect ten",
+      "description": "A round of 10+ with no mistakes"
+    },
+    "points_100": {
+      "title": "First hundred",
+      "description": "Earn 100 points"
+    },
+    "points_1000": {
+      "title": "One thousand",
+      "description": "Earn 1,000 points"
+    },
+    "points_5000": {
+      "title": "Five thousand",
+      "description": "Earn 5,000 points"
+    },
+    "points_10000": {
+      "title": "Ten thousand",
+      "description": "Earn 10,000 points"
+    },
+    "points_50000": {
+      "title": "Fifty thousand",
+      "description": "Earn 50,000 points"
+    }
+  }
+}

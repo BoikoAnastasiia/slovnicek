@@ -216,6 +216,10 @@ https://slovnicek-alpha.vercel.app (Vercel, auto-deploy from `main`).
   toast confirmation after adding a word.
 - **Backup UI dropped** (user choice) — sync + local storage only; the
   achievements catalog was expanded to 25 instead and moved to its own page.
+- **Interface language (i18n)** — next-intl with a client-side locale
+  provider; Slovak, Russian and English UI, switchable in Profile and
+  persisted like the theme. ICU plural messages replace the hand-rolled
+  Slovak plural helper; learning content is untouched by the UI locale.
 - **Word bank note** — the bank is a build-time artifact
   (`scripts/build-wordbank.mjs`); the app never calls a vocabulary API at
   runtime. Wiktionary REST is used only for best-effort enrichment of

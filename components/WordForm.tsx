@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 import type { WordRow } from '@/lib/types'
 import { newWord, saveWord } from '@/lib/db'
 import { enrich } from '@/lib/enrich'
@@ -7,6 +8,7 @@ import { loadBank, searchBankByRussian } from '@/lib/feed'
 import { runSync } from '@/lib/supabase'
 
 export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSaved: (saved: WordRow) => void }) {
+  const t = useTranslations('form')
   const [mode, setMode] = useState<'sk' | 'ru'>('sk')
   const [slovak, setSlovak] = useState(initial?.slovak ?? '')
   const [translationRu, setTranslationRu] = useState(initial?.translation_ru ?? '')
@@ -87,7 +89,7 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
             style={mode === 'sk' ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
             onClick={() => setMode('sk')}
           >
-            Slovenské slovo
+            {t('modeSk')}
           </button>
           <button
             type="button"
@@ -95,25 +97,25 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
             style={mode === 'ru' ? { borderColor: 'var(--accent)', background: 'var(--accent-soft)' } : {}}
             onClick={() => setMode('ru')}
           >
-            Ruské slovo
+            {t('modeRu')}
           </button>
         </div>
       )}
       {mode === 'sk' ? (
         <>
-          <label htmlFor="wf-slovak">Slovenské slovo</label>
+          <label htmlFor="wf-slovak">{t('modeSk')}</label>
           <div style={{ display: 'flex', gap: 8 }}>
             <input id="wf-slovak" value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} autoFocus required />
             <button type="button" className="btn" onClick={prefill} disabled={enriching}>
-              {enriching ? '…' : 'Doplniť'}
+              {enriching ? '…' : t('enrich')}
             </button>
           </div>
-          <label htmlFor="wf-translation-ru">Preklad (RU)</label>
+          <label htmlFor="wf-translation-ru">{t('translationRu')}</label>
           <input id="wf-translation-ru" value={translationRu} onChange={(e) => setTranslationRu(e.target.value)} />
         </>
       ) : (
         <>
-          <label htmlFor="wf-translation-ru">Ruské slovo</label>
+          <label htmlFor="wf-translation-ru">{t('modeRu')}</label>
           <div style={{ display: 'flex', gap: 8 }}>
             <input
               id="wf-translation-ru"
@@ -122,38 +124,38 @@ export default function WordForm({ initial, onSaved }: { initial?: WordRow; onSa
               autoFocus
             />
             <button type="button" className="btn" onClick={findByRussian} disabled={searching}>
-              {searching ? '…' : 'Nájsť'}
+              {searching ? '…' : t('find')}
             </button>
           </div>
           {ruMiss && (
             <p style={{ color: 'var(--muted)', fontSize: 13, margin: '4px 0' }}>
-              Nenašlo sa v banke — doplň slovenské slovo ručne.
+              {t('ruMiss')}
             </p>
           )}
-          <label htmlFor="wf-slovak">Slovenské slovo</label>
+          <label htmlFor="wf-slovak">{t('modeSk')}</label>
           <input id="wf-slovak" value={slovak} onChange={(e) => setSlovak(e.target.value)} onBlur={prefill} required />
         </>
       )}
-      <label htmlFor="wf-definition-sk">Definícia (SK)</label>
+      <label htmlFor="wf-definition-sk">{t('definitionSk')}</label>
       <textarea id="wf-definition-sk" value={definitionSk} onChange={(e) => setDefinitionSk(e.target.value)} rows={2} />
       <div style={{ display: 'flex', gap: 12 }}>
         <div style={{ flex: 1 }}>
-          <label htmlFor="wf-pos">Slovný druh</label>
+          <label htmlFor="wf-pos">{t('partOfSpeech')}</label>
           <input id="wf-pos" value={partOfSpeech} onChange={(e) => setPartOfSpeech(e.target.value)} />
         </div>
         <div style={{ width: 90 }}>
-          <label htmlFor="wf-gender">Rod</label>
-          <input id="wf-gender" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="m/ž/s" />
+          <label htmlFor="wf-gender">{t('gender')}</label>
+          <input id="wf-gender" value={gender} onChange={(e) => setGender(e.target.value)} placeholder={t('genderPlaceholder')} />
         </div>
       </div>
-      <label htmlFor="wf-examples">Príklady (jeden na riadok)</label>
+      <label htmlFor="wf-examples">{t('examples')}</label>
       <textarea id="wf-examples" value={examples} onChange={(e) => setExamples(e.target.value)} rows={2} />
-      <label htmlFor="wf-tags">Tagy (oddelené čiarkou)</label>
-      <input id="wf-tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="práca, A2" />
-      <label htmlFor="wf-notes">Poznámky</label>
+      <label htmlFor="wf-tags">{t('tags')}</label>
+      <input id="wf-tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder={t('tagsPlaceholder')} />
+      <label htmlFor="wf-notes">{t('notes')}</label>
       <input id="wf-notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
       <button className="btn btn-primary" style={{ marginTop: 20, width: '100%' }}>
-        {initial ? 'Uložiť zmeny' : 'Pridať slovo'}
+        {initial ? t('submitSave') : t('submitAdd')}
       </button>
     </form>
   )

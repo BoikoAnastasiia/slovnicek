@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'next-view-transitions'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslations } from 'next-intl'
 import { db, getProfile, uuid } from '@/lib/db'
 import { introduceMoreWords, loadBank } from '@/lib/feed'
 import { applyAnswer, dueWords, promptLangOf } from '@/lib/fsrs'
@@ -10,7 +11,6 @@ import { applyHintPenalty, applyRoundToProfile, evaluateAchievements, pointsFor,
 import { closestAnswer, diffAnswer } from '@/lib/text'
 import { onVoicesReady, speakSk, ttsAvailable } from '@/lib/tts'
 import { runSync } from '@/lib/supabase'
-import { plural } from '@/lib/plural'
 import type { Question, WordRow } from '@/lib/types'
 
 type Phase = 'loading' | 'answering' | 'feedback' | 'summary' | 'empty'
@@ -24,6 +24,8 @@ function FlameIcon() {
 }
 
 export default function RoundPage() {
+  const t = useTranslations('round')
+  const ta = useTranslations('achievements')
   const [questions, setQuestions] = useState<Question[]>([])
   const [wordsById, setWordsById] = useState<Map<string, WordRow>>(new Map())
   const [index, setIndex] = useState(0)
@@ -178,8 +180,8 @@ export default function RoundPage() {
   if (phase === 'empty') {
     return (
       <div style={{ textAlign: 'center', paddingTop: 80 }}>
-        <p className="serif" style={{ fontSize: 24 }}>Nič nie je na zopakovanie</p>
-        <Link href="/add"><button className="btn">Pridať slová</button></Link>
+        <p className="serif" style={{ fontSize: 24 }}>{t('empty')}</p>
+        <Link href="/add"><button className="btn">{t('addWords')}</button></Link>
       </div>
     )
   }
@@ -187,14 +189,14 @@ export default function RoundPage() {
   if (phase === 'summary') {
     return (
       <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} style={{ textAlign: 'center', paddingTop: 60 }}>
-        <p style={{ color: 'var(--muted)' }}>Kolo dokončené</p>
+        <p style={{ color: 'var(--muted)' }}>{t('done')}</p>
         <div className="serif" style={{ fontSize: 56 }}>+{points}</div>
-        <p style={{ margin: '4px 0 24px' }}>{correctRef.current} / {questions.length} správne</p>
+        <p style={{ margin: '4px 0 24px' }}>{t('correctOf', { correct: correctRef.current, total: questions.length })}</p>
         {unlocked.map((a) => (
           <motion.div key={a.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card"
             style={{ margin: '8px auto', maxWidth: 320, borderColor: 'var(--accent)' }}>
-            <strong>🏅 {a.title}</strong>
-            <div style={{ fontSize: 13, color: 'var(--muted)' }}>{a.description}</div>
+            <strong>🏅 {ta(`${a.id}.title`)}</strong>
+            <div style={{ fontSize: 13, color: 'var(--muted)' }}>{ta(`${a.id}.description`)}</div>
           </motion.div>
         ))}
         <div style={{ fontSize: 13, color: 'var(--muted)', margin: '12px 0 20px' }}>
@@ -206,9 +208,9 @@ export default function RoundPage() {
           ))}
         </div>
         <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginTop: 20 }}>
-          <Link href="/"><button className="btn btn-primary">Hotovo</button></Link>
+          <Link href="/"><button className="btn btn-primary">{t('finish')}</button></Link>
           {!moreExhausted && (
-            <button className="btn" onClick={learnMoreAndContinue}>Ďalších 10 nových slov</button>
+            <button className="btn" onClick={learnMoreAndContinue}>{t('moreTen')}</button>
           )}
         </div>
       </motion.div>
@@ -258,7 +260,7 @@ export default function RoundPage() {
       <AnimatePresence mode="wait">
         <motion.div key={index} initial={{ opacity: 0, x: 24 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -24 }} transition={{ duration: 0.18 }}>
           {q.type.startsWith('listening') ? (
-            <button className="btn" aria-label="Prehrať slovo" style={{ display: 'block', margin: '0 auto 24px', fontSize: 32, padding: '20px 32px' }}
+            <button className="btn" aria-label={t('playWord')} style={{ display: 'block', margin: '0 auto 24px', fontSize: 32, padding: '20px 32px' }}
               onClick={() => speakSk(q.audioWord!)}>🔊</button>
           ) : (
             <p className={q.type === 'sk_definition' ? 'serif' : ''} style={{ fontSize: q.type === 'sk_definition' ? 24 : 28, textAlign: 'center', margin: '20px 0 32px' }}>
@@ -280,20 +282,20 @@ export default function RoundPage() {
               {hints > 0 && (
                 <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }}>
                   <p className="hint-mask">{hintMask(q.answer, hints)}</p>
-                  <p className="hint-note">{maxHints(q.answer)} {plural(maxHints(q.answer), ['písmeno', 'písmená', 'písmen'])} · nápoveda = polovica bodov</p>
+                  <p className="hint-note">{t('hintNote', { count: maxHints(q.answer) })}</p>
                 </motion.div>
               )}
               <input value={typed} onChange={(e) => setTyped(e.target.value)} autoFocus
-                aria-label="Odpoveď"
-                placeholder="Napíš po slovensky…" autoComplete="off" autoCapitalize="off" style={{ fontSize: 18, textAlign: 'center' }} />
+                aria-label={t('answerAria')}
+                placeholder={t('typedPlaceholder')} autoComplete="off" autoCapitalize="off" style={{ fontSize: 18, textAlign: 'center' }} />
               <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
                 <button type="button" className="btn" style={{ padding: '12px 14px' }}
                   onClick={() => setHints((h) => Math.min(h + 1, maxHints(q.answer)))}
                   disabled={hints >= maxHints(q.answer)}>
-                  Nápoveda
+                  {t('hint')}
                 </button>
-                <button type="button" className="btn" style={{ flex: 1 }} onClick={() => submit('')}>Neviem</button>
-                <button className="btn btn-primary" style={{ flex: 2 }}>Odpovedať</button>
+                <button type="button" className="btn" style={{ flex: 1 }} onClick={() => submit('')}>{t('dontKnow')}</button>
+                <button className="btn btn-primary" style={{ flex: 2 }}>{t('answer')}</button>
               </div>
             </form>
           )}
@@ -302,11 +304,11 @@ export default function RoundPage() {
             <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="card"
               style={{ borderColor: lastCorrect ? 'var(--accent)' : 'var(--danger)', textAlign: 'center' }}>
               <p style={{ color: lastCorrect ? 'var(--accent)' : 'var(--danger)', fontWeight: 600, margin: 0 }}>
-                {lastCorrect ? `Správne +${lastEarned}` : 'Nesprávne'}
+                {lastCorrect ? t('correct', { points: lastEarned }) : t('wrong')}
               </p>
               {!lastCorrect && !q.choices && lastInput.trim() !== '' && (
                 <p className="answer-diff">
-                  <span style={{ color: 'var(--muted)', fontSize: 13, letterSpacing: 0 }}>Tvoja odpoveď: </span>
+                  <span style={{ color: 'var(--muted)', fontSize: 13, letterSpacing: 0 }}>{t('yourAnswer')}</span>
                   {diffAnswer(lastInput, closestAnswer(lastInput, [q.answer, ...(q.accepted ?? [])])).map((s, i) => (
                     <span key={i} className={s.status === 'ok' ? undefined : 'diff-bad'}>{s.char}</span>
                   ))}
@@ -314,13 +316,13 @@ export default function RoundPage() {
               )}
               <div className="serif" style={{ fontSize: 30, margin: '8px 0 2px' }}>
                 {word.slovak}
-                {ttsAvailable() && <button className="btn" aria-label="Vypočuť" style={{ marginLeft: 10, padding: '4px 10px' }} onClick={() => speakSk(word.slovak)}>🔊</button>}
+                {ttsAvailable() && <button className="btn" aria-label={t('listen')} style={{ marginLeft: 10, padding: '4px 10px' }} onClick={() => speakSk(word.slovak)}>🔊</button>}
               </div>
               <p style={{ margin: '2px 0' }}>{word.translation_ru}</p>
               {word.definition_sk && <p style={{ color: 'var(--muted)', fontStyle: 'italic', margin: '2px 0' }}>{word.definition_sk}</p>}
               {word.examples[0] && <p style={{ fontSize: 14, margin: '6px 0 0' }}>„{word.examples[0]}“</p>}
               <button className="btn btn-primary" style={{ marginTop: 16, width: '100%' }} onClick={next}>
-                Ďalej ⏎
+                {t('next')}
               </button>
             </motion.div>
           )}

@@ -1,6 +1,7 @@
 'use client'
 import { useMemo, useState } from 'react'
 import { useLiveQuery } from 'dexie-react-hooks'
+import { useTranslations } from 'next-intl'
 import { db } from '@/lib/db'
 import { matchesQuery } from '@/lib/text'
 import { maturityOf } from '@/lib/fsrs'
@@ -10,6 +11,7 @@ import WordSheet from '@/components/WordSheet'
 const TIER_DOT = { new: 'var(--muted)', learning: 'var(--accent)', mature: 'var(--gold)' } as const
 
 export default function BasePage() {
+  const t = useTranslations('base')
   const [query, setQuery] = useState('')
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
@@ -24,8 +26,8 @@ export default function BasePage() {
 
   return (
     <div>
-      <h1 className="serif" style={{ fontSize: 28 }}>Slová <span style={{ color: 'var(--muted)', fontSize: 16 }}>({words.length})</span></h1>
-      <input placeholder="Hľadať…" aria-label="Hľadať slová" value={query} onChange={(e) => setQuery(e.target.value)} />
+      <h1 className="serif" style={{ fontSize: 28 }}>{t('title')} <span style={{ color: 'var(--muted)', fontSize: 16 }}>({words.length})</span></h1>
+      <input placeholder={t('searchPlaceholder')} aria-label={t('searchAria')} value={query} onChange={(e) => setQuery(e.target.value)} />
       {allTags.length > 0 && (
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', margin: '10px 0' }}>
           {allTags.map((t) => (
@@ -51,7 +53,7 @@ export default function BasePage() {
             </span>
           </button>
         ))}
-        {visible.length === 0 && <p style={{ color: 'var(--muted)' }}>Žiadne slová.</p>}
+        {visible.length === 0 && <p style={{ color: 'var(--muted)' }}>{t('empty')}</p>}
       </div>
       {open && <WordSheet word={open} onClose={() => setOpenId(null)} />}
     </div>

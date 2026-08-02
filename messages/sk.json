@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "today": "Dnes",
+    "words": "Slová",
+    "add": "+ Pridať",
+    "profile": "Profil"
+  },
+  "today": {
+    "words": "{count, plural, one {# slovo} few {# slová} other {# slov}}",
+    "points": "{count, plural, one {# bod} few {# body} other {# bodov}}",
+    "streak": "séria {count, plural, one {# deň} few {# dni} other {# dní}}",
+    "feedIntro": "+{count, plural, one {# nové slovo} few {# nové slová} other {# nových slov}} z prísunu",
+    "dueLabel": "{count, plural, one {slovo na zopakovanie} few {slová na zopakovanie} other {slov na zopakovanie}}",
+    "allDoneBank": "Všetko zopakované. Uč sa nové slová z databázy!",
+    "allDoneAdd": "Všetko zopakované. Pridaj nové slová!",
+    "startRound": "Začať kolo",
+    "learnNew": "Učiť sa nové slová",
+    "addWord": "Pridať slovo"
+  },
+  "round": {
+    "empty": "Nič nie je na zopakovanie",
+    "addWords": "Pridať slová",
+    "done": "Kolo dokončené",
+    "correctOf": "{correct} / {total} správne",
+    "finish": "Hotovo",
+    "moreTen": "Ďalších 10 nových slov",
+    "typedPlaceholder": "Napíš po slovensky…",
+    "answerAria": "Odpoveď",
+    "hint": "Nápoveda",
+    "hintNote": "{count, plural, one {# písmeno} few {# písmená} other {# písmen}} · nápoveda = polovica bodov",
+    "dontKnow": "Neviem",
+    "answer": "Odpovedať",
+    "correct": "Správne +{points}",
+    "wrong": "Nesprávne",
+    "yourAnswer": "Tvoja odpoveď: ",
+    "next": "Ďalej ⏎",
+    "playWord": "Prehrať slovo",
+    "listen": "Vypočuť"
+  },
+  "add": {
+    "title": "Nové slovo",
+    "added": "„{word}“ pridané ✓"
+  },
+  "form": {
+    "modeSk": "Slovenské slovo",
+    "modeRu": "Ruské slovo",
+    "translationRu": "Preklad (RU)",
+    "enrich": "Doplniť",
+    "find": "Nájsť",
+    "ruMiss": "Nenašlo sa v banke — doplň slovenské slovo ručne.",
+    "definitionSk": "Definícia (SK)",
+    "partOfSpeech": "Slovný druh",
+    "gender": "Rod",
+    "genderPlaceholder": "m/ž/s",
+    "examples": "Príklady (jeden na riadok)",
+    "tags": "Tagy (oddelené čiarkou)",
+    "tagsPlaceholder": "práca, A2",
+    "notes": "Poznámky",
+    "submitAdd": "Pridať slovo",
+    "submitSave": "Uložiť zmeny"
+  },
+  "base": {
+    "title": "Slová",
+    "searchPlaceholder": "Hľadať…",
+    "searchAria": "Hľadať slová",
+    "empty": "Žiadne slová."
+  },
+  "sheet": {
+    "tierNew": "nové",
+    "tierLearning": "učí sa",
+    "tierMature": "zrelé",
+    "mode": "režim",
+    "langSk": "slovenčina",
+    "langRu": "ruština",
+    "edit": "Upraviť",
+    "pinSk": "Pripnúť SK",
+    "pinRu": "Pripnúť RU",
+    "autoMode": "Auto režim",
+    "delete": "Vymazať",
+    "confirmDelete": "Vymazať „{word}“?",
+    "listen": "Vypočuť"
+  },
+  "profile": {
+    "title": "Profil",
+    "pointsLabel": "{count, plural, one {bod} few {body} other {bodov}}",
+    "streakLabel": "séria {count, plural, one {deň} few {dni} other {dní}}",
+    "bestLabel": "najlepšia",
+    "achievements": "Úspechy",
+    "sync": "Synchronizácia",
+    "notConfigured": "Supabase nie je nakonfigurovaný (.env.local).",
+    "signIn": "Prihlásiť cez Google",
+    "syncNow": "Synchronizovať",
+    "syncing": "Synchronizujem…",
+    "signOut": "Odhlásiť",
+    "syncOk": "✓ hotovo",
+    "syncOffline": "offline",
+    "syncError": "chyba",
+    "appearance": "Vzhľad",
+    "light": "Svetlý",
+    "dark": "Tmavý",
+    "language": "Jazyk",
+    "feed": "Denný prísun",
+    "feedOff": "Vypnutý"
+  },
+  "achievementsPage": {
+    "title": "Úspechy",
+    "unlockedOf": "{count} / {total} odomknutých"
+  },
+  "achievements": {
+    "first_word": {
+      "title": "Prvé slovo",
+      "description": "Ulož svoje prvé slovo"
+    },
+    "words_10": {
+      "title": "Zberateľ",
+      "description": "Zbierka má 10 slov"
+    },
+    "words_50": {
+      "title": "Polstovka",
+      "description": "Zbierka má 50 slov"
+    },
+    "words_100": {
+      "title": "Slovná zásoba",
+      "description": "Zbierka má 100 slov"
+    },
+    "words_500": {
+      "title": "Knižnica",
+      "description": "Zbierka má 500 slov"
+    },
+    "words_1000": {
+      "title": "Tisíc slov",
+      "description": "Zbierka má 1 000 slov"
+    },
+    "words_2000": {
+      "title": "Celá banka",
+      "description": "Zbierka má 2 000 slov"
+    },
+    "reviews_100": {
+      "title": "Sto opakovaní",
+      "description": "Odpovedz na 100 otázok"
+    },
+    "reviews_500": {
+      "title": "Päťsto opakovaní",
+      "description": "Odpovedz na 500 otázok"
+    },
+    "reviews_1000": {
+      "title": "Tisíc opakovaní",
+      "description": "Odpovedz na 1 000 otázok"
+    },
+    "reviews_5000": {
+      "title": "Päťtisíc opakovaní",
+      "description": "Odpovedz na 5 000 otázok"
+    },
+    "streak_3": {
+      "title": "Tri dni",
+      "description": "Séria 3 dni v kuse"
+    },
+    "streak_7": {
+      "title": "Týždeň v kuse",
+      "description": "Séria 7 dní v kuse"
+    },
+    "streak_30": {
+      "title": "Mesiac v kuse",
+      "description": "Séria 30 dní v kuse"
+    },
+    "streak_100": {
+      "title": "Sto dní",
+      "description": "Séria 100 dní v kuse"
+    },
+    "first_sk_mode": {
+      "title": "Po slovensky!",
+      "description": "Prvé slovo v slovenskom režime"
+    },
+    "sk_mode_10": {
+      "title": "Desať po slovensky",
+      "description": "10 slov v slovenskom režime"
+    },
+    "sk_mode_100": {
+      "title": "Sto po slovensky",
+      "description": "100 slov v slovenskom režime"
+    },
+    "perfect_round": {
+      "title": "Čisté kolo",
+      "description": "Kolo od 5 otázok bez chyby"
+    },
+    "perfect_10": {
+      "title": "Dokonalá desiatka",
+      "description": "Kolo od 10 otázok bez chyby"
+    },
+    "points_100": {
+      "title": "Prvá stovka",
+      "description": "Získaj 100 bodov"
+    },
+    "points_1000": {
+      "title": "Tisícka",
+      "description": "Získaj 1 000 bodov"
+    },
+    "points_5000": {
+      "title": "Päťtisícka",
+      "description": "Získaj 5 000 bodov"
+    },
+    "points_10000": {
+      "title": "Desaťtisíc",
+      "description": "Získaj 10 000 bodov"
+    },
+    "points_50000": {
+      "title": "Päťdesiattisíc",
+      "description": "Získaj 50 000 bodov"
+    }
+  }
+}

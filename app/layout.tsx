@@ -3,6 +3,7 @@ import { Fraunces, Inter } from 'next/font/google'
 import { ViewTransitions } from 'next-view-transitions'
 import Nav from '@/components/Nav'
 import SyncBootstrap from '@/components/SyncBootstrap'
+import LocaleProvider from '@/components/LocaleProvider'
 import './globals.css'
 
 const fraunces = Fraunces({ subsets: ['latin', 'latin-ext'], variable: '--font-fraunces' })
@@ -25,9 +26,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* suppress: extensions like Grammarly inject body attributes before hydration */}
         <body suppressHydrationWarning>
           <script dangerouslySetInnerHTML={{ __html: themeInit }} />
-          <SyncBootstrap />
-          <main className="app-main">{children}</main>
-          <Nav />
+          <LocaleProvider>
+            <SyncBootstrap />
+            <main className="app-main">{children}</main>
+            <Nav />
+          </LocaleProvider>
         </body>
       </html>
     </ViewTransitions>

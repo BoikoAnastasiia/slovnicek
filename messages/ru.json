@@ -1,0 +1,211 @@
+{
+  "nav": {
+    "today": "Сегодня",
+    "words": "Слова",
+    "add": "+ Добавить",
+    "profile": "Профиль"
+  },
+  "today": {
+    "words": "{count, plural, one {# слово} few {# слова} many {# слов} other {# слова}}",
+    "points": "{count, plural, one {# балл} few {# балла} many {# баллов} other {# балла}}",
+    "streak": "серия {count, plural, one {# день} few {# дня} many {# дней} other {# дня}}",
+    "feedIntro": "+{count, plural, one {# новое слово} few {# новых слова} many {# новых слов} other {# новых слова}} из подборки",
+    "dueLabel": "{count, plural, one {слово на повторение} few {слова на повторение} many {слов на повторение} other {слова на повторение}}",
+    "allDoneBank": "Всё повторено. Учи новые слова из банка!",
+    "allDoneAdd": "Всё повторено. Добавь новые слова!",
+    "startRound": "Начать раунд",
+    "learnNew": "Учить новые слова",
+    "addWord": "Добавить слово"
+  },
+  "round": {
+    "empty": "Нечего повторять",
+    "addWords": "Добавить слова",
+    "done": "Раунд завершён",
+    "correctOf": "{correct} / {total} правильно",
+    "finish": "Готово",
+    "moreTen": "Ещё 10 новых слов",
+    "typedPlaceholder": "Напиши по-словацки…",
+    "answerAria": "Ответ",
+    "hint": "Подсказка",
+    "hintNote": "{count, plural, one {# буква} few {# буквы} many {# букв} other {# буквы}} · подсказка = половина баллов",
+    "dontKnow": "Не знаю",
+    "answer": "Ответить",
+    "correct": "Верно +{points}",
+    "wrong": "Неверно",
+    "yourAnswer": "Твой ответ: ",
+    "next": "Дальше ⏎",
+    "playWord": "Произнести слово",
+    "listen": "Прослушать"
+  },
+  "add": {
+    "title": "Новое слово",
+    "added": "«{word}» добавлено ✓"
+  },
+  "form": {
+    "modeSk": "Словацкое слово",
+    "modeRu": "Русское слово",
+    "translationRu": "Перевод (RU)",
+    "enrich": "Дополнить",
+    "find": "Найти",
+    "ruMiss": "Не нашлось в банке — впиши словацкое слово вручную.",
+    "definitionSk": "Определение (SK)",
+    "partOfSpeech": "Часть речи",
+    "gender": "Род",
+    "genderPlaceholder": "m/ž/s",
+    "examples": "Примеры (по одному на строку)",
+    "tags": "Теги (через запятую)",
+    "tagsPlaceholder": "работа, A2",
+    "notes": "Заметки",
+    "submitAdd": "Добавить слово",
+    "submitSave": "Сохранить изменения"
+  },
+  "base": {
+    "title": "Слова",
+    "searchPlaceholder": "Поиск…",
+    "searchAria": "Искать слова",
+    "empty": "Слов нет."
+  },
+  "sheet": {
+    "tierNew": "новое",
+    "tierLearning": "учится",
+    "tierMature": "зрелое",
+    "mode": "режим",
+    "langSk": "словацкий",
+    "langRu": "русский",
+    "edit": "Изменить",
+    "pinSk": "Закрепить SK",
+    "pinRu": "Закрепить RU",
+    "autoMode": "Авторежим",
+    "delete": "Удалить",
+    "confirmDelete": "Удалить «{word}»?",
+    "listen": "Прослушать"
+  },
+  "profile": {
+    "title": "Профиль",
+    "pointsLabel": "{count, plural, one {балл} few {балла} many {баллов} other {балла}}",
+    "streakLabel": "серия {count, plural, one {день} few {дня} many {дней} other {дня}}",
+    "bestLabel": "лучшая",
+    "achievements": "Достижения",
+    "notConfigured": "Supabase не настроен (.env.local).",
+    "sync": "Синхронизация",
+    "signIn": "Войти через Google",
+    "syncNow": "Синхронизировать",
+    "syncing": "Синхронизирую…",
+    "signOut": "Выйти",
+    "syncOk": "✓ готово",
+    "syncOffline": "офлайн",
+    "syncError": "ошибка",
+    "appearance": "Оформление",
+    "light": "Светлая",
+    "dark": "Тёмная",
+    "language": "Язык",
+    "feed": "Слов в день",
+    "feedOff": "Выключено"
+  },
+  "achievementsPage": {
+    "title": "Достижения",
+    "unlockedOf": "{count} / {total} открыто"
+  },
+  "achievements": {
+    "first_word": {
+      "title": "Первое слово",
+      "description": "Сохрани своё первое слово"
+    },
+    "words_10": {
+      "title": "Коллекционер",
+      "description": "В коллекции 10 слов"
+    },
+    "words_50": {
+      "title": "Полсотни",
+      "description": "В коллекции 50 слов"
+    },
+    "words_100": {
+      "title": "Словарный запас",
+      "description": "В коллекции 100 слов"
+    },
+    "words_500": {
+      "title": "Библиотека",
+      "description": "В коллекции 500 слов"
+    },
+    "words_1000": {
+      "title": "Тысяча слов",
+      "description": "В коллекции 1 000 слов"
+    },
+    "words_2000": {
+      "title": "Весь банк",
+      "description": "В коллекции 2 000 слов"
+    },
+    "reviews_100": {
+      "title": "Сто повторений",
+      "description": "Ответь на 100 вопросов"
+    },
+    "reviews_500": {
+      "title": "Пятьсот повторений",
+      "description": "Ответь на 500 вопросов"
+    },
+    "reviews_1000": {
+      "title": "Тысяча повторений",
+      "description": "Ответь на 1 000 вопросов"
+    },
+    "reviews_5000": {
+      "title": "Пять тысяч повторений",
+      "description": "Ответь на 5 000 вопросов"
+    },
+    "streak_3": {
+      "title": "Три дня",
+      "description": "Серия 3 дня подряд"
+    },
+    "streak_7": {
+      "title": "Неделя подряд",
+      "description": "Серия 7 дней подряд"
+    },
+    "streak_30": {
+      "title": "Месяц подряд",
+      "description": "Серия 30 дней подряд"
+    },
+    "streak_100": {
+      "title": "Сто дней",
+      "description": "Серия 100 дней подряд"
+    },
+    "first_sk_mode": {
+      "title": "По-словацки!",
+      "description": "Первое слово в словацком режиме"
+    },
+    "sk_mode_10": {
+      "title": "Десять по-словацки",
+      "description": "10 слов в словацком режиме"
+    },
+    "sk_mode_100": {
+      "title": "Сто по-словацки",
+      "description": "100 слов в словацком режиме"
+    },
+    "perfect_round": {
+      "title": "Чистый раунд",
+      "description": "Раунд от 5 вопросов без ошибок"
+    },
+    "perfect_10": {
+      "title": "Идеальная десятка",
+      "description": "Раунд от 10 вопросов без ошибок"
+    },
+    "points_100": {
+      "title": "Первая сотня",
+      "description": "Набери 100 баллов"
+    },
+    "points_1000": {
+      "title": "Тысяча",
+      "description": "Набери 1 000 баллов"
+    },
+    "points_5000": {
+      "title": "Пять тысяч",
+      "description": "Набери 5 000 баллов"
+    },
+    "points_10000": {
+      "title": "Десять тысяч",
+      "description": "Набери 10 000 баллов"
+    },
+    "points_50000": {
+      "title": "Пятьдесят тысяч",
+      "description": "Набери 50 000 баллов"
+    }
+  }
+}
