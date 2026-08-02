@@ -128,10 +128,12 @@ Single-user, deliberately simple:
    sheet (all fields, mastery bar from FSRS stability, pronounce, edit, pin
    prompt mode, delete).
 3. **Add** — assisted entry form.
-4. **Round** — quiz flow: progress dots, combo indicator, points ticker.
+4. **Round** — quiz flow: chip header (question count, flame combo chip,
+   gold score chip with floating point gains), animated progress bar.
 5. **Summary** — round results and achievement unlocks.
-6. **Profile/Settings** — achievements gallery, sync status, Google sign-in,
-   JSON export/import backup, theme toggle.
+6. **Profile/Settings** — stats, link to the achievements page, sync status,
+   Google sign-in, theme toggle, daily-feed size.
+7. **Achievements** — dedicated gallery page (25 achievements, Slovak copy).
 
 ## Design language
 
@@ -187,3 +189,34 @@ the app ships a pregenerated word bank and feeds it into the SRS daily.
   Today screen load, idempotent per day.
 - Manual Add and Wiktionary enrichment remain unchanged — the feed makes
   them optional, not obsolete.
+
+## Addendum (2026-08-02): shipped post-v1 changes
+
+Everything below is implemented and live at
+https://slovnicek-alpha.vercel.app (Vercel, auto-deploy from `main`).
+
+- **Endless learning** — no daily cap: „Učiť sa nové slová" on Today and
+  „Ďalších 10 nových slov" on the round summary pull the next batch of bank
+  words on demand.
+- **RU-first entry** — the Add form has a Slovak/Russian toggle; „Nájsť"
+  looks the Russian word up in the bank and prefills the entry.
+- **Shared-gloss synonyms** — words sharing a Russian gloss variant (e.g.
+  `že`/`čo` = «что») are accepted as typed answers for each other, and MC
+  distractors never include a word whose gloss overlaps the answer.
+- **Mistake feedback** — wrong typed answers render the user's input with
+  mistyped letters in red and skipped letters as gaps (Levenshtein alignment
+  over folded characters, diffed against the closest accepted answer).
+- **Hints** — typed questions offer „Nápoveda": first hint shows the word
+  shape, each further hint reveals one letter (never the whole word); using
+  any hint halves the question's points (rounded up).
+- **Visual refresh** — lexicat-inspired pill buttons with 3D bottom edges,
+  blue + gold palette, cap logo/hero, gamified round header (chips + progress
+  bar that turns gold while a combo runs), subtle CSS-only confetti dots,
+  view transitions between pages (next-view-transitions, directional slides),
+  toast confirmation after adding a word.
+- **Backup UI dropped** (user choice) — sync + local storage only; the
+  achievements catalog was expanded to 25 instead and moved to its own page.
+- **Word bank note** — the bank is a build-time artifact
+  (`scripts/build-wordbank.mjs`); the app never calls a vocabulary API at
+  runtime. Wiktionary REST is used only for best-effort enrichment of
+  manually added words.

@@ -6,6 +6,26 @@ watch prompts switch from Russian translations to Slovak-only definitions as
 words mature. A bundled bank of the 2,000 most frequent Slovak words feeds
 you new vocabulary daily — no lesson plans, no curation.
 
+**Live:** https://slovnicek-alpha.vercel.app
+
+## Features
+
+- **Spaced repetition** (ts-fsrs) with question types that follow word
+  maturity: multiple choice → typed recall → Slovak-definition prompts;
+  listening variants via `sk-SK` TTS
+- **Built-in word supply** — frequency-ordered bank of 2,000 words with
+  Russian translations, introduced daily and on demand (endless mode)
+- **Forgiving grading** — diacritics-tolerant typing, synonyms sharing a
+  Russian gloss accepted, letter-level mistake highlighting, optional hints
+  (half points)
+- **Gamification** — points with combo multiplier, daily streaks,
+  25 achievements, animated round header
+- **Offline-first** — IndexedDB source of truth, installable PWA, works with
+  zero connection; optional Google sign-in syncs devices through Supabase
+  (last-write-wins, RLS-scoped)
+- **Personal knowledge base** — search, tag filters, assisted word entry in
+  Slovak or Russian with dictionary prefill
+
 <p align="center">
   <img src="docs/screens/today.png" width="260" alt="Today — due words and daily feed" />
   <img src="docs/screens/round.png" width="260" alt="Quiz round — auto-graded questions" />
