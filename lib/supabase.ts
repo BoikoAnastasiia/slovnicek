@@ -26,7 +26,10 @@ export async function signInWithGoogle(): Promise<void> {
   const supabase = await getClient()
   await supabase?.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: `${window.location.origin}/profile` },
+    options: {
+      redirectTo: `${window.location.origin}/profile`,
+      queryParams: { prompt: 'select_account' },
+    },
   })
 }
 
